@@ -115,19 +115,15 @@ bin_dir:
 obj_dir:
 	mkdir -p obj
 
-clean:
-	rm -rf bench.txt bench_pim_intra.txt bench_pim_intra_local.txt delayInfo.txt delayInfo_pim_intra.txt buffer* message_record.txt
-	rm -rf proc_r*_t* *.log
-	rm -rf obj bin
-	rm -f partition_info.py
-	rm -rf reports
-
 clean-output:
 	rm -rf bench.txt bench_pim_intra.txt bench_pim_intra_local.txt delayInfo.txt delayInfo_pim_intra.txt buffer* message_record.txt
 	rm -rf proc_r*_t* *.log
 	rm -rf output_epoch_*.txt
 	rm -f partition_info.py
 	rm -rf reports
+
+clean: clean-output
+	rm -rf obj bin
 
 help:
 	@echo "GCN Benchmark Makefile"
@@ -149,8 +145,8 @@ help:
 	@echo "  run-ruby        - Same as run but use gcn_ruby.yml"
 	@echo "  run-debug       - Same as run but enable interchiplet --debug logs"
 	@echo "  run_popnet_intra  - Run standalone PIM intra-chiplet PopNet simulation"
-	@echo "  clean           - Remove all generated files"
-	@echo "  clean-output    - Remove output files only"
+	@echo "  clean           - Remove build artifacts and runtime outputs"
+	@echo "  clean-output    - Remove runtime outputs only, keep compiled binaries"
 	@echo "  help            - Show this help message"
 	@echo ""
 	@echo "Environment variables:"
@@ -175,4 +171,4 @@ help:
 	@echo "  make run          # Build chiplets + pim-intra-delay + run full interchiplet flow"
 	@echo "  make run-ruby     # Build chiplets + pim-intra-delay + run Ruby/Garnet flow"
 	@echo "  make run_popnet_intra # Run PIM intra-chiplet PopNet with vertical-only topology"
-	@echo "  make clean        # Clean all generated files"
+	@echo "  make clean        # Clean build artifacts and runtime outputs"

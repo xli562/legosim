@@ -3,7 +3,7 @@
 ## 1. 总体目标
 `benchmark/gcn` 用于把一次 GCN 推理拆成 `CPU`、`PIM`、`IO` 三个芯粒，并生成可直接用于 `gem5 + interchiplet + PopNet` 的输入与运行计划。
 
-当前目录采用的实现口径是：
+当前目录采用的实现：
 - 统一输入是 `ONNX` 图。
 - `CPU` 与 `IO` 在 `gem5 SE` 中运行真实 `RISC-V` workload。
 - `PIM` 运行本地功能模型，并注入离线估算出的计算时间与片内网络时间。
@@ -29,20 +29,14 @@
 3. `phase2` 由 `gcn.yml` 直接调用 `popnet`。
 4. `phase2` 使用 `topology/mesh_2_2.gv` 跑片间 `PopNet`，输出 `delayInfo.txt`。
 
-### 2.3 为什么必须这样拆
-如果把 `bench_pim_intra.txt` 再并入 `phase2`，就会出现重复建模：
-- 一次是在 `pim.cpp` 中通过 `pim_intra_delay_profile.txt` 注入；
-- 一次是在 `phase2` 中再次被 `PopNet` 回放。
-
-这会导致 `PIM` 片内延迟被重复计算。当前口径 A 的核心，就是避免这一点。
-
 ## 3. 目录中的主要模块
 
 ### 3.1 模型输入
 - `build_gcn_onnx.py`
 
 作用：
-- 生成默认的 `GCN ONNX` 输入图 `gcn_3chiplet.onnx`。
+- 生成默认的轻量 `2-layer GCN ONNX` 输入图 `gcn_3chiplet.onnx`。
+- 该模型由当前工程脚本直接构造，用于芯粒划分、访存分析和仿真流程联调。
 - 这是整个离线分析与运行计划生成的统一入口。
 
 ### 3.2 离线估算入口
@@ -54,7 +48,9 @@
 - 做算子划分；
 - 统计算量与访存；
 - 生成 `CPU / PIM / IO` 的运行计划；
-- 生成片间 `bench.txt` 与片内 `bench_pim_intra.txt`。
+- 生成片内 `bench_pim_intra.txt`；
+- 如果显式执行离线 `bench` 目标，也可额外导出离线 `bench.txt`；
+- 当前主线 `make run` 使用 `interchiplet` 在联机阶段记录在线 `bench.txt`。
 
 ### 3.3 CPU 芯粒
 - `cpu.cpp`
@@ -93,6 +89,7 @@
 - 对每个映射到 `PIM` 的节点执行 `128KB SRAM` 约束下的 `tile` 搜索；
 - 估计激活块、权重块、累加器块、输出块的驻留情况；
 - 为 `16` 个 `NPU` 的 `4x4` 纵向拓扑生成片内事务；
+- 独立运行片内 `PopNet` 时，会再加入一个入口控制器节点，因此本地归一化后的拓扑是 `17` 节点；
 - 运行离线 `PopNet` 得到片内延迟分布。
 
 ## 4. 关键输出文件
@@ -107,7 +104,7 @@
 
 ### 4.2 网络相关文件
 - `bench.txt`
-  - 芯粒级在线事务，供 `phase2` 使用。
+  - 芯粒级事务，当前主线流程中默认由联机运行在线记录，供 `phase2` 使用。
 - `bench_pim_intra.txt`
   - PIM 片内离线事务，只供 `run_popnet_intra_pim.sh` 使用。
 - `delayInfo_pim_intra.txt`
@@ -117,51 +114,9 @@
 - `delayInfo.txt`
   - `phase2` 片间 `PopNet` 输出。
 
-## 5. 当前执行流程
+## 5. 运行依赖
 
-### 5.1 离线阶段
-```bash
-cd benchmark/gcn
-make ir-plan
-```
-
-这一步会：
-- 编译 `cpu / pim / io`；
-- 生成 `gcn_3chiplet.onnx`；
-- 读取 `ONNX`；
-- 生成 `runtime_plan_pim.txt`、`runtime_plan_io.txt`；
-- 生成 `bench_pim_intra.txt`；
-- 如果启用了片间 bench，也会生成 `bench.txt`。
-
-### 5.2 PIM 片内延迟画像
-```bash
-cd benchmark/gcn
-make pim-intra-delay
-```
-
-这一步会：
-- 跑 `run_popnet_intra_pim.sh`；
-- 生成 `delayInfo_pim_intra.txt`；
-- 调用 `build_pim_intra_delay_profile.py`；
-- 输出 `reports/pim_intra_delay_profile.txt`。
-
-### 5.3 联机三芯粒运行
-```bash
-cd benchmark/gcn
-make run
-```
-
-这一步会：
-- 启动 `CPU` gem5 进程；
-- 启动 `PIM` 本地后端；
-- 启动 `IO` gem5 进程；
-- 在 `phase1` 中跑完整的三芯粒协同；
-- 由 `interchiplet` 记录在线片间事务；
-- 在 `phase2` 中仅回放片间 `bench.txt`。
-
-## 6. 运行依赖
-
-### 6.1 Python
+### 5.1 Python
 至少需要：
 - `python3`
 - `numpy`
@@ -172,42 +127,53 @@ make run
 python3 -m pip install numpy onnx
 ```
 
-### 6.2 编译工具
+### 5.2 编译工具
 至少需要：
 - `g++`
 - `riscv64-unknown-linux-gnu-g++`
 - `make`
 - `bash`
 
-### 6.3 仿真器
+### 5.3 仿真器
 至少需要：
 - `gem5/build/RISCV/gem5.opt`
 - `interchiplet/bin/interchiplet`
 - `popnet_chiplet/build/popnet`
 
-### 6.4 数据与配置
-至少需要：
+### 5.4 数据与配置
+默认至少需要：
 - `data/cora.graph`
 - `data/cora.svmlight`
 - `chiplet_config.json`
 
-## 7. 推荐测试顺序
-标准使用时，建议直接执行：
+说明：
+- 当前 `README` 中的数据路径说明针对默认 `cora` 输入；
+- 如果运行时通过环境变量覆盖输入路径，也可以切换到其他同格式数据文件。
 
+## 6. 当前执行流程
+
+### 6.1 推荐执行方式
+日常测试建议直接使用一条主命令：
 ```bash
 cd benchmark/gcn
+make clean
 make run
 ```
 
-这和 `artifact/matmul` 的使用方式一致：由 `make run` 调用 `interchiplet`，再由 yml 自动执行 `phase1` 和 `phase2`。
+这条命令会顺序完成以下工作：
+- 编译 `cpu / pim / io` 三个芯粒程序；
+- 生成统一输入模型 `gcn_3chiplet.onnx`；
+- 基于 `ONNX` 生成划分结果、运行计划和 `PIM` 片内事务；
+- 先离线完成 `PIM` 片内 `PopNet`，得到片内延迟画像；
+- 再启动 `CPU + PIM + IO` 的联机仿真；
+- 最后由 `phase2` 只回放芯粒间通信事务，完成片间网络仿真。
 
-如果你在做分阶段排错，再按下面顺序拆开检查：
+也就是说，`make run` 已经是当前目录下最完整、最推荐的端到端测试入口。
 
-1. `make clean-output`
-2. `make`
-3. `make gen-onnx`
-4. `make ir-plan`
-5. `make pim-intra-delay`
-6. `make run`
+### 6.2 可单独执行的片内延迟步骤
+```bash
+cd benchmark/gcn
+make pim-intra-delay
+```
 
-当前目录不再保留单独的 `phase2` 调试脚本。片间 `PopNet` 由 `gcn.yml` 在正式运行流程中直接调用，因此推荐只维护 `make run` 这一条主线。
+这个命令适合单独调试 `PIM` 芯粒内部建模。它会重新生成并运行片内 `PopNet`，最终输出 `reports/pim_intra_delay_profile.txt`，供 `pim.cpp` 在正式运行时读取。
