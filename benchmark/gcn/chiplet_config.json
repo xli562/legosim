@@ -1,0 +1,188 @@
+﻿{
+  "cpu": {
+    "arch": "riscv64",
+    "cores": 4,
+    "frequency_hz": 800000000,
+    "l1_bytes": 131072,
+    "l2_bytes": 262144,
+    "l3_bytes": 4194304,
+    "vector_peak_ops_per_sec": {
+      "fp64": 281600000000.0,
+      "fp32": 563200000000.0,
+      "fp16": 1126000000000.0
+    },
+    "pe_count": 4,
+    "interconnect": {
+      "topology": "mesh",
+      "routing": ["xy", "xy_override"],
+      "flit_bits": 256
+    }
+  },
+  "io": {
+    "arch": "riscv64",
+    "cores": 1,
+    "frequency_hz": 800000000,
+    "local_caches": {
+      "l1_bytes": 32768,
+      "l2_bytes": 65536,
+      "l3_bytes": 131072
+    },
+    "system_llc_bytes": 2097152,
+    "memory_channels": 2,
+    "channel_bandwidth_bytes_per_cycle": 32,
+    "interconnect": {
+      "topology": "mesh",
+      "flit_bits": 256
+    }
+  },
+  "pim": {
+    "npu_count": 16,
+    "frequency_hz": 500000000,
+    "sram_per_npu_bytes": 131072,
+    "mac_precision": "int8_to_int32",
+    "chiplet_int8_ops_per_sec": 3200000000000.0,
+    "chiplet_int32_acc_ops_per_sec": 3200000000000.0,
+    "activation_bytes": 1,
+    "weight_bytes": 1,
+    "accumulator_bytes": 4,
+    "output_bytes": 4,
+    "compute_model": "fused_mac",
+    "ingress_model": {
+      "mode": "single_ddr_entry_controller_fanout",
+      "ddr_attached_npu": 0,
+      "top_row_targets": [0, 1, 2, 3],
+      "controller_merge_sources": [0, 1, 2, 3],
+      "gateway_router_id": 1,
+      "emit_gateway_transactions_in_bench": true,
+      "data_path": ["DDR", "local_SRAM", "in_memory_compute_unit"]
+    },
+    "interconnect": {
+      "topology": "4x4_vertical_only",
+      "flit_bits": 256
+    }
+  },
+  "inter_chiplet_noc": {
+    "topology": "mesh",
+    "flit_bits": 256
+  },
+  "phase1_runtime": {
+    "strategy": "split_authority",
+    "devices": {
+      "CPU": "real",
+      "PIM": "analytic",
+      "IO": "real"
+    }
+  },
+  "estimation": {
+    "memory_unit_bytes": 131072,
+    "cache_miss_penalty_cycles": 120,
+    "flit_payload_bytes": 32,
+    "io_compute_ops_per_cycle": 16,
+    "weight_stream_ratio": 0.25,
+    "pipeline_depth_cycles": {
+      "CPU": 8,
+      "PIM": 16,
+      "IO": 6
+    },
+    "cpu_cache_bandwidth_bytes_per_cycle": {
+      "l1": 128,
+      "l2": 64,
+      "l3": 32,
+      "mem": 64
+    },
+    "cpu_cache_access_latency_cycles": {
+      "l1": 1,
+      "l2": 4,
+      "l3": 12,
+      "mem": 0
+    },
+    "io_cache_bandwidth_bytes_per_cycle": {
+      "l1": 64,
+      "l2": 32,
+      "l3": 16,
+      "llc": 16,
+      "mem": 64
+    },
+    "io_cache_access_latency_cycles": {
+      "l1": 1,
+      "l2": 3,
+      "l3": 8,
+      "llc": 12,
+      "mem": 0
+    },
+    "pim_ddr_bandwidth_bytes_per_cycle": 64,
+    "pim_sram_bandwidth_bytes_per_cycle": 64,
+    "pim_ddr_setup_cycles": 20,
+    "pim_sram_setup_cycles": 4,
+    "pim_writeback_setup_cycles": 8,
+    "pim_sram_reserved_bytes": 4096,
+    "pim_tile_search_candidates": [8, 16, 32, 64, 96, 128, 192, 256],
+    "pim_tile_search_max_candidates_per_axis": 18,
+    "pim_tile_search_prefer_square": true,
+    "pim_tile_fragmentation_penalty_alpha": 0.08,
+    "memory_profile_default": "baseline",
+    "memory_profiles": {
+      "baseline": {
+        "CPU": {
+          "offchip_reduction_ratio": 0.0,
+          "tile_reuse_ratio": 0.0,
+          "cache_affinity_ratio": 0.0,
+          "p2p_reuse_ratio": 0.0
+        },
+        "PIM": {
+          "offchip_reduction_ratio": 0.0,
+          "tile_reuse_ratio": 0.0,
+          "cache_affinity_ratio": 0.0,
+          "p2p_reuse_ratio": 0.0
+        },
+        "IO": {
+          "offchip_reduction_ratio": 0.0,
+          "tile_reuse_ratio": 0.0,
+          "cache_affinity_ratio": 0.0,
+          "p2p_reuse_ratio": 0.0
+        }
+      },
+      "optimized": {
+        "CPU": {
+          "offchip_reduction_ratio": 0.05,
+          "tile_reuse_ratio": 0.12,
+          "cache_affinity_ratio": 0.08,
+          "p2p_reuse_ratio": 0.0
+        },
+        "PIM": {
+          "offchip_reduction_ratio": 0.12,
+          "tile_reuse_ratio": 0.22,
+          "cache_affinity_ratio": 0.12,
+          "p2p_reuse_ratio": 0.18
+        },
+        "IO": {
+          "offchip_reduction_ratio": 0.03,
+          "tile_reuse_ratio": 0.08,
+          "cache_affinity_ratio": 0.05,
+          "p2p_reuse_ratio": 0.0
+        }
+      }
+    },
+    "device_memory_optimization": {
+      "CPU": {
+        "offchip_reduction_ratio": 0.0,
+        "tile_reuse_ratio": 0.0,
+        "cache_affinity_ratio": 0.0,
+        "p2p_reuse_ratio": 0.0
+      },
+      "PIM": {
+        "offchip_reduction_ratio": 0.0,
+        "tile_reuse_ratio": 0.0,
+        "cache_affinity_ratio": 0.0,
+        "p2p_reuse_ratio": 0.0
+      },
+      "IO": {
+        "offchip_reduction_ratio": 0.0,
+        "tile_reuse_ratio": 0.0,
+        "cache_affinity_ratio": 0.0,
+        "p2p_reuse_ratio": 0.0
+      }
+    }
+  }
+}
+

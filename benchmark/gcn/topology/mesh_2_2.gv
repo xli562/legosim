@@ -1,0 +1,18 @@
+graph mesh_2_2 
+{
+    edge[weight=1]
+    node[pipeline_stage_delay=1]
+    
+    // 2x2 Mesh Network
+    // 芯粒布局：
+    // (0,0) (0,1)
+    // (1,0) (1,1)
+    
+    // 水平连接
+    0--1
+    2--3
+    
+    // 垂直连接
+    0--2
+    1--3
+}

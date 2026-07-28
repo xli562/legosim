@@ -1,0 +1,27 @@
+graph hybrid_chiplet_pim_20
+{
+    edge[weight=1]
+    node[pipeline_stage_delay=1]
+
+    // Chiplet-level routers (0..3), mesh 2x2
+    0--1
+    0--2
+    1--3
+    2--3
+
+    // PIM intra routers (4..19), vertical-only 4x4
+    // col 0
+    4--8--12--16
+    // col 1
+    5--9--13--17
+    // col 2
+    6--10--14--18
+    // col 3
+    7--11--15--19
+
+    // Gateway links: PIM chiplet router(1) to top NPUs
+    1--4
+    1--5
+    1--6
+    1--7
+}

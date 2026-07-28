@@ -1,0 +1,24 @@
+graph pim_vertical_4_4
+{
+    edge[weight=1]
+    node[pipeline_stage_delay=1]
+
+    // Local controller node 16 fans out to the top row.
+    16--0
+    16--1
+    16--2
+    16--3
+
+    // 16 NPUs arranged as 4x4
+    // row0:  0  1  2  3
+    // row1:  4  5  6  7
+    // row2:  8  9 10 11
+    // row3: 12 13 14 15
+    // Vertical-only links, no horizontal links.
+
+    0--4--8--12
+    1--5--9--13
+    2--6--10--14
+    3--7--11--15
+}
+
