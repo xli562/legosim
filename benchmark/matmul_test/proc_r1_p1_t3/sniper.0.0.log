@@ -1,0 +1,25 @@
+Execution starts at 2026-9-27  19:14:52
+CWD: /home/xli56/LEGOSIM_MICRO/benchmark/matmul_test/proc_r1_p1_t3
+Exec:  /home/xli56/LEGOSIM_MICRO/snipersim/run-sniper --frontend=dr -- /home/xli56/LEGOSIM_MICRO/benchmark/matmul_test/bin/matmul_c 0 0
+[SNIPER] Start
+[SNIPER] --------------------------------------------------------------------------------
+[SNIPER] Sniper using SIFT/trace-driven frontend
+[SNIPER] Running full application in DETAILED mode
+[SNIPER] --------------------------------------------------------------------------------
+[SNIPER] Enabling performance models
+[INTERCMD] CYCLE 0
+[SNIPER] Setting instrumentation mode to DETAILED
+Enter Sniper sendMessage
+[DR_PRE_SYSCALL] syscall=507 thread=0
+[INTERCMD] SEND 0 0 0 1
+[SIFT:0] Error: No such file or directory
+[TRACE:0] -- DONE --
+[RECORD-TRACE] Using DynamoRIO frontend
+[SNIPER] Disabling performance models
+[SNIPER] Leaving ROI after 18.81 seconds
+[INTERCMD] CYCLE 3412454
+[SNIPER] Simulated 3.4M instructions, 3.4M cycles, 0.99 IPC
+[SNIPER] Simulation speed 180.1 KIPS (180.1 KIPS / target core - 5552.1ns/instr)
+[SNIPER] Setting instrumentation mode to FAST_FORWARD
+[SNIPER] End
+[SNIPER] Elapsed time: 19.08 seconds

@@ -1,0 +1,21 @@
+Execution starts at 2026-9-26  21:14:13
+CWD: /home/xli56/LEGOSIM_MICRO/benchmark/matmul_test/proc_r2_p1_t3
+Exec:  /home/xli56/LEGOSIM_MICRO/snipersim/run-sniper --frontend=dr -- /home/xli56/LEGOSIM_MICRO/benchmark/matmul_test/bin/matmul_c 0 0
+[SNIPER] Start
+[SNIPER] --------------------------------------------------------------------------------
+[SNIPER] Sniper using SIFT/trace-driven frontend
+[SNIPER] Running full application in DETAILED mode
+[SNIPER] --------------------------------------------------------------------------------
+[SNIPER] Enabling performance models
+[INTERCMD] CYCLE 0
+[SNIPER] Setting instrumentation mode to DETAILED
+[TRACE:0] -- DONE --
+[RECORD-TRACE] Using DynamoRIO frontend
+[SNIPER] Disabling performance models
+[SNIPER] Leaving ROI after 27.11 seconds
+[INTERCMD] CYCLE 3457701
+[SNIPER] Simulated 3.4M instructions, 3.5M cycles, 0.98 IPC
+[SNIPER] Simulation speed 125.6 KIPS (125.6 KIPS / target core - 7964.4ns/instr)
+[SNIPER] Setting instrumentation mode to FAST_FORWARD
+[SNIPER] End
+[SNIPER] Elapsed time: 27.38 seconds

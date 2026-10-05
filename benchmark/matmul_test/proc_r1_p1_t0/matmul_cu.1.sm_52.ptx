@@ -1,0 +1,116 @@
+
+
+
+
+
+
+
+
+.version 7.3
+.target sm_52
+.address_size 64
+
+
+
+.visible .entry _Z14matrix_mul_gpuPlS_S_i(
+.param .u64 _Z14matrix_mul_gpuPlS_S_i_param_0,
+.param .u64 _Z14matrix_mul_gpuPlS_S_i_param_1,
+.param .u64 _Z14matrix_mul_gpuPlS_S_i_param_2,
+.param .u32 _Z14matrix_mul_gpuPlS_S_i_param_3
+)
+{
+.reg .pred %p<6>;
+.reg .b32 %r<24>;
+.reg .b64 %rd<68>;
+
+
+ld.param.u64 %rd26, [_Z14matrix_mul_gpuPlS_S_i_param_0];
+ld.param.u64 %rd27, [_Z14matrix_mul_gpuPlS_S_i_param_1];
+ld.param.u64 %rd24, [_Z14matrix_mul_gpuPlS_S_i_param_2];
+ld.param.u32 %r12, [_Z14matrix_mul_gpuPlS_S_i_param_3];
+cvta.to.global.u64 %rd1, %rd27;
+cvta.to.global.u64 %rd2, %rd26;
+mov.u32 %r1, %tid.y;
+mov.u32 %r2, %tid.x;
+setp.lt.s32 %p1, %r12, 1;
+mov.u64 %rd67, 0;
+@%p1 bra $L__BB0_7;
+
+add.s32 %r14, %r12, -1;
+and.b32 %r23, %r12, 3;
+setp.lt.u32 %p2, %r14, 3;
+mov.u64 %rd67, 0;
+mov.u32 %r22, 0;
+@%p2 bra $L__BB0_4;
+
+sub.s32 %r21, %r12, %r23;
+mul.wide.s32 %rd31, %r2, 8;
+add.s64 %rd60, %rd1, %rd31;
+mad.lo.s32 %r16, %r1, %r12, 2;
+mul.wide.s32 %rd32, %r16, 8;
+add.s64 %rd59, %rd2, %rd32;
+mul.wide.s32 %rd5, %r12, 8;
+mov.u64 %rd67, 0;
+mov.u32 %r22, 0;
+
+$L__BB0_3:
+ld.global.u64 %rd33, [%rd60];
+ld.global.u64 %rd34, [%rd59+-16];
+mul.lo.s64 %rd35, %rd33, %rd34;
+add.s64 %rd36, %rd35, %rd67;
+add.s64 %rd37, %rd60, %rd5;
+ld.global.u64 %rd38, [%rd37];
+ld.global.u64 %rd39, [%rd59+-8];
+mul.lo.s64 %rd40, %rd38, %rd39;
+add.s64 %rd41, %rd40, %rd36;
+add.s64 %rd42, %rd37, %rd5;
+ld.global.u64 %rd43, [%rd42];
+ld.global.u64 %rd44, [%rd59];
+mul.lo.s64 %rd45, %rd43, %rd44;
+add.s64 %rd46, %rd45, %rd41;
+add.s64 %rd47, %rd42, %rd5;
+add.s64 %rd60, %rd47, %rd5;
+ld.global.u64 %rd48, [%rd47];
+ld.global.u64 %rd49, [%rd59+8];
+mul.lo.s64 %rd50, %rd48, %rd49;
+add.s64 %rd67, %rd50, %rd46;
+add.s32 %r22, %r22, 4;
+add.s64 %rd59, %rd59, 32;
+add.s32 %r21, %r21, -4;
+setp.ne.s32 %p3, %r21, 0;
+@%p3 bra $L__BB0_3;
+
+$L__BB0_4:
+setp.eq.s32 %p4, %r23, 0;
+@%p4 bra $L__BB0_7;
+
+mad.lo.s32 %r17, %r22, %r12, %r2;
+mul.wide.s32 %rd51, %r17, 8;
+add.s64 %rd65, %rd1, %rd51;
+mul.wide.s32 %rd15, %r12, 8;
+mad.lo.s32 %r18, %r1, %r12, %r22;
+mul.wide.s32 %rd52, %r18, 8;
+add.s64 %rd64, %rd2, %rd52;
+
+$L__BB0_6:
+.pragma "nounroll";
+ld.global.u64 %rd53, [%rd65];
+ld.global.u64 %rd54, [%rd64];
+mul.lo.s64 %rd55, %rd53, %rd54;
+add.s64 %rd67, %rd55, %rd67;
+add.s64 %rd65, %rd65, %rd15;
+add.s64 %rd64, %rd64, 8;
+add.s32 %r23, %r23, -1;
+setp.ne.s32 %p5, %r23, 0;
+@%p5 bra $L__BB0_6;
+
+$L__BB0_7:
+cvta.to.global.u64 %rd56, %rd24;
+mad.lo.s32 %r19, %r1, 10, %r2;
+mul.wide.s32 %rd57, %r19, 8;
+add.s64 %rd58, %rd56, %rd57;
+st.global.u64 [%rd58], %rd67;
+ret;
+
+}
+

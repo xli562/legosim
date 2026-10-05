@@ -150,7 +150,7 @@ inline SyncCommand parseCmd(int __fd_in = STDIN_FILENO) {
 
     // Parse command.
     SyncCommand cmd = parseCmd(std::string(message));
-    delete message;
+    delete[] message;
 
     // Return message.
     return cmd;

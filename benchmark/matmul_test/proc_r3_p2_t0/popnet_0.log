@@ -1,0 +1,16 @@
+Execution starts at 2026-9-26  18:39:13
+CWD: /home/xli56/LEGOSIM_MICRO/benchmark/matmul_test/proc_r3_p2_t0
+Exec:  /home/xli56/LEGOSIM_MICRO/popnet_chiplet/build/popnet -A 100 -c 1 -V 3 -B 12 -O 12 -F 2 -L 1000 -T 1000000000 -r 1 -I ../bench.txt -G test/mesh_6_6.gv -D ../delayInfo.txt -P
+****************configuration********************
+ary size:100
+cube dimension:1
+virtual channel number:3
+buffer size:12
+outbuffer size:12
+flit size:2
+link length:1000
+simulation length:1e+09
+trace file:../bench.txt
+Routing algorithm:0
+****************configuration********************
+Transaction count: 0

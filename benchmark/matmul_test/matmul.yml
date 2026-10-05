@@ -23,7 +23,10 @@ phase1:
     pre_copy: "$SIMULATOR_ROOT/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"
   # Process 3
   - cmd: "$SIMULATOR_ROOT/snipersim/run-sniper"
-    args: ["--", "$BENCHMARK_ROOT/bin/matmul_c", "0", "0"]
+# Start ChatGPT fix snipersim
+#    args: ["--", "$BENCHMARK_ROOT/bin/matmul_c", "0", "0"]
+    args: ["--frontend=dr", "--", "$BENCHMARK_ROOT/bin/matmul_c", "0", "0"]
+# End ChatGPT fix snipersim
     log: "sniper.0.0.log"
     is_to_stdout: false
     clock_rate: 1

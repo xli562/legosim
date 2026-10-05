@@ -1,0 +1,63 @@
+Execution starts at 2026-9-26  18:39:22
+CWD: /home/xli56/LEGOSIM_MICRO/benchmark/matmul_test/proc_r5_p1_t3
+Exec:  /home/xli56/LEGOSIM_MICRO/snipersim/run-sniper -- /home/xli56/LEGOSIM_MICRO/benchmark/matmul_test/bin/matmul_c 0 0
+[SNIPER] Start
+[SNIPER] --------------------------------------------------------------------------------
+[SNIPER] Sniper using SIFT/trace-driven frontend
+[SNIPER] Running full application in DETAILED mode
+[SNIPER] --------------------------------------------------------------------------------
+[SNIPER] Enabling performance models
+[INTERCMD] CYCLE 0
+[SNIPER] Setting instrumentation mode to DETAILED
+A: Source/pin/elfio/img_elf.cpp: ProcessSectionHeaders: 809: unknown section type 0x13 for sec[48,.relr.dyn] in /lib64/ld-linux-x86-64.so.2
+
+################################################################################
+## STACK TRACE
+################################################################################
+??? at /home/xli56/LEGOSIM_MICRO/snipersim/sift/recorder/obj-intel64/sift_recorder+0x00036ac51 
+
+??? at /home/xli56/LEGOSIM_MICRO/snipersim/sift/recorder/obj-intel64/sift_recorder+0x000371d8c 
+
+??? at /home/xli56/LEGOSIM_MICRO/snipersim/sift/recorder/obj-intel64/sift_recorder+0x00030315c 
+
+??? at /home/xli56/LEGOSIM_MICRO/snipersim/sift/recorder/obj-intel64/sift_recorder+0x000305a7d 
+
+??? at /home/xli56/LEGOSIM_MICRO/snipersim/sift/recorder/obj-intel64/sift_recorder+0x000305b2f 
+
+??? at /home/xli56/LEGOSIM_MICRO/snipersim/sift/recorder/obj-intel64/sift_recorder+0x00033ffde 
+
+??? at /home/xli56/LEGOSIM_MICRO/snipersim/sift/recorder/obj-intel64/sift_recorder+0x000344bbc 
+
+??? at /home/xli56/LEGOSIM_MICRO/snipersim/sift/recorder/obj-intel64/sift_recorder+0x000320397 
+
+LEVEL_INJECTOR::UNIX_INJECTEE::StartProgram+0x000000101 at /home/xli56/LEGOSIM_MICRO/snipersim/pin_kit/intel64/bin/pinbin+0x000396a51 
+
+??? at /home/xli56/LEGOSIM_MICRO/snipersim/sift/recorder/obj-intel64/sift_recorder+0x00031cdaf 
+
+main+0x0000002df at /home/xli56/LEGOSIM_MICRO/snipersim/sift/recorder/obj-intel64/sift_recorder+0x00001a15f 
+
+LEVEL_INJECTOR::UNIX_INJECTEE::StartTool+0x000000212 at /home/xli56/LEGOSIM_MICRO/snipersim/pin_kit/intel64/bin/pinbin+0x000395392 
+
+LEVEL_INJECTOR::UNIX_INJECTEE::RunMainThreadOnPinStackAttach+0x000000429 at /home/xli56/LEGOSIM_MICRO/snipersim/pin_kit/intel64/bin/pinbin+0x0003981e9 
+
+Pin: pin-3.11-97998-7ecce2dac
+Copyright 2002-2019 Intel Corporation.
+
+[TRACE:0] -- DONE --
+[SIFT:0] Error: No such file or directory
+Pin app terminated abnormally due to signal 6.
+[RECORD-TRACE] Using the Pin frontend (sift/recorder)
+[SNIPER] Disabling performance models
+[SNIPER] Leaving ROI after 5.00 seconds
+[INTERCMD] CYCLE 0
+[SNIPER] Simulated 0.0M instructions, 0.0M cycles, 0.00 IPC
+[SNIPER] Simulation speed 0.0 KIPS (0.0 KIPS / target core - 4998850822.4ns/instr)
+[SNIPER] Setting instrumentation mode to FAST_FORWARD
+[SNIPER] End
+[SNIPER] Elapsed time: 5.26 seconds
+Traceback (most recent call last):
+  File "/home/xli56/LEGOSIM_MICRO/snipersim/run-sniper", line 925, in <module>
+    gen_simout.generate_simout(resultsdir = outputdir, output = open(os.path.join(outputdir, 'sim.out'), 'w'), silent = True)
+  File "/home/xli56/LEGOSIM_MICRO/snipersim/tools/gen_simout.py", line 61, in generate_simout
+    for c in range(ncores)
+ZeroDivisionError: float division by zero

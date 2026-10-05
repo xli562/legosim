@@ -1,0 +1,5 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_Z14matrix_mul_gpuPlS_S_i' for 'sm_52'
+ptxas info    : Function properties for _Z14matrix_mul_gpuPlS_S_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, 348 bytes cmem[0]
