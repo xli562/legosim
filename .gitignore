@@ -6,3 +6,10 @@ interchiplet/lib
 interchiplet/build
 
 gpgpu-sim_distribution_backup
+
+benchmark/matmul_test/proc_r*
+benchmark/matmul_test/bench.txt
+benchmark/matmul_test/delayInfo.txt
+benchmark/matmul_test/pacCountInfo.txt
+benchmark/matmul_test/buffer*
+benchmark/matmul_test/*.log
