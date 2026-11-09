@@ -103,6 +103,23 @@ For the artifact document, please access [Artifact for LEGOSim](./artifact/READM
 
 After correct execution of above steps, use benchmark/matmul_test to verify environment setup.
 
+## Rerun the example in the existing Docker container
+
+For later SSH sessions, if the `chiplet` container and benchmark executables are already built, restart the container and restore the simulator environment before running the example:
+
+```bash
+docker start chiplet
+docker exec -it chiplet bash
+cd /workspace/sim
+source setup_env.sh
+cd benchmark/matmul_test
+make run
+```
+
+Run the first two commands on the host and the remaining commands inside the container. A successful run exits after the simulation converges and creates `proc_r{R}_p{P}_t{T}` output directories in `benchmark/matmul_test`.
+
+## First-time verification
+
 1. Set simulator environment
 
     ```

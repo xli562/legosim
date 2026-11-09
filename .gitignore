@@ -1,6 +1,8 @@
 .vscode
 *.o
 
+run_outputs
+
 interchiplet/bin
 interchiplet/lib
 interchiplet/build
