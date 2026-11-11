@@ -1,6 +1,14 @@
+# Extensionless files (mostly binaries/scripts), except makefiles.
+# Keep this block first so later rules can still ignore whole directories.
+*
+!*.*
+!*/
+![Mm]ake[Ff]ile
+
 # Workspace configuration
 .vscode
 CLAUDE.md
+TODO.md
 
 # Experiment outputs
 run_outputs
@@ -22,5 +30,9 @@ benchmark/matmul_test/delayInfo.txt
 benchmark/matmul_test/pacCountInfo.txt
 benchmark/matmul_test/buffer*
 benchmark/matmul_test/*.log
-benchmark/matmul_test/bin/matmul_checked_c
-benchmark/matmul_test/bin/matmul_npu
+
+# Compiled binaries (makefiles build into bin/)
+benchmark/**/bin/
+*.out
+*.so
+*.a
