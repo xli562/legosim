@@ -1,4 +1,3 @@
-
 For the detail user manual documents, please access [User Manual for LEGOSim ](./LEGOSim_Manual.pdf).
 
 For the artifact document, please access [Artifact for LEGOSim](./artifact/README.md).
