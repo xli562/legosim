@@ -6,6 +6,13 @@
 ![Mm]ake[Ff]ile
 ![Dd]ocker[Ff]ile
 
+# Compiled binaries (makefiles build into bin/)
+benchmark/**/bin/
+*.out
+*.so
+*.a
+**pycache**
+
 # Workspace configuration
 .vscode
 CLAUDE.md
@@ -17,6 +24,7 @@ run_outputs
 *.pdf
 *.o
 
+# Scratch directory
 scratch
 
 interchiplet/bin
@@ -32,8 +40,6 @@ benchmark/matmul_test/pacCountInfo.txt
 benchmark/matmul_test/buffer*
 benchmark/matmul_test/*.log
 
-# Compiled binaries (makefiles build into bin/)
-benchmark/**/bin/
-*.out
-*.so
-*.a
+# temporary
+benchmark/matmul_test
+tools/
