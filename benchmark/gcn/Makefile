@@ -159,7 +159,7 @@ help:
 	@echo ""
 	@echo "Requirements:"
 	@echo "  - RISC-V cross-compiler: riscv64-unknown-linux-gnu-g++"
-	@echo "  - gem5 RISC-V simulator: gem5/build/RISCV/gem5.opt"
+	@echo "  - gem5 RISC-V simulator: dependencies/gem5/build/RISCV/gem5.opt"
 	@echo ""
 	@echo "Example usage:"
 	@echo "  make              # Build all chiplets"

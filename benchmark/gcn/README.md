@@ -136,9 +136,9 @@ python3 -m pip install numpy onnx
 
 ### 5.3 仿真器
 至少需要：
-- `gem5/build/RISCV/gem5.opt`
+- `dependencies/gem5/build/RISCV/gem5.opt`
 - `interchiplet/bin/interchiplet`
-- `popnet_chiplet/build/popnet`
+- `dependencies/popnet_chiplet/build/popnet`
 
 ### 5.4 数据与配置
 默认至少需要：

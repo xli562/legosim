@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SIMULATOR_ROOT="${SIMULATOR_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
-POPNET_BIN="$SIMULATOR_ROOT/popnet_chiplet/build/popnet"
+POPNET_BIN="$SIMULATOR_ROOT/dependencies/popnet_chiplet/build/popnet"
 BENCH_FILE="$SCRIPT_DIR/bench_pim_intra.txt"
 DELAY_FILE="$SCRIPT_DIR/delayInfo_pim_intra.txt"
 TOPO_FILE="$SCRIPT_DIR/topology/pim_vertical_4_4.gv"
@@ -14,7 +14,7 @@ POPNET_LOG_MODE="${POPNET_LOG_MODE:-summary}"
 
 if [[ ! -x "$POPNET_BIN" ]]; then
   echo "[run_popnet_intra_pim] ERROR: popnet binary not found: $POPNET_BIN"
-  echo "[run_popnet_intra_pim] Build it first: (cd $SIMULATOR_ROOT/popnet_chiplet && make)"
+  echo "[run_popnet_intra_pim] Build it first: (cd $SIMULATOR_ROOT/dependencies/popnet_chiplet && make)"
   exit 1
 fi
 

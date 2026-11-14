@@ -1,7 +1,7 @@
 # Phase 1 configuration.
 phase1:
   # Process 0
-  - cmd: "$SIMULATOR_ROOT/snipersim/run-sniper"
+  - cmd: "$SIMULATOR_ROOT/dependencies/snipersim/run-sniper"
     args: ["--", "$BENCHMARK_ROOT/bin/dlrm", "3", "3"]
     log: "sniper.3.3.log"
     is_to_stdout: false
@@ -16,7 +16,7 @@ phase1:
 # Phase 2 configuration.
 phase2:
   # Process 0
-  - cmd: "$SIMULATOR_ROOT/popnet_chiplet/build/popnet"
+  - cmd: "$SIMULATOR_ROOT/dependencies/popnet_chiplet/build/popnet"
     args: ["-A", "16", "-c", "1", "-V", "3", "-B", "12", "-O", "12", "-F", "4", "-L", "1000", "-T", "1000000000", "-r", "1", "-I", "../bench.txt", "-G", "/test/star_4_4.gv","-R","4","-D", "../delayInfo.txt", "-P"]
     log: "popnet_0.log"
     is_to_stdout: false

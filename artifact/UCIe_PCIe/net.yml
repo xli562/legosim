@@ -49,7 +49,7 @@ phase1:
     is_to_stdout: false
     clock_rate: 1
   # Process 8
-  - cmd: "$SIMULATOR_ROOT/snipersim/run-sniper"
+  - cmd: "$SIMULATOR_ROOT/dependencies/snipersim/run-sniper"
     args: ["--", "$BENCHMARK_ROOT/bin/net_c", "5", "5"]
     log: "sniper.5.5.log"
     is_to_stdout: false
@@ -59,7 +59,7 @@ phase1:
 # Phase 2 configuration.
 phase2:
   # Process 0
-  - cmd: "$SIMULATOR_ROOT/popnet_chiplet/build/popnet"
+  - cmd: "$SIMULATOR_ROOT/dependencies/popnet_chiplet/build/popnet"
     args: ["-A", "36", "-c", "1", "-V", "3", "-B", "12", "-O", "12", "-F", "32", "-L", "1000", "-T", "100000000000000000", "-r", "1", "-I", "../bench.txt","-R", "4", "-G", "../topology/mesh_6_6.gv","-R","4","-D", "../delayInfo.txt", "-P"]
     log: "popnet_0.log"
     is_to_stdout: false

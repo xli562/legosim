@@ -28,7 +28,7 @@ For the artifact document, please access [Artifact for LEGOSim](./artifact/READM
 
     ```
     # In setup_env.sh, modify export PATH=/usr/local/cuda-11.3/bin:$PATH according to your CUDA version and path
-    source setup_env.sh
+    source scripts/setup_env.sh
     ```
 
     Success will show: setup_environment succeeded
@@ -36,7 +36,7 @@ For the artifact document, please access [Artifact for LEGOSim](./artifact/READM
 4. Apply modifications to snipersim and gpgpu-sim code.
 
     ```
-    ./apply_patch.sh
+    ./scripts/apply_patch.sh
     ```
 
     See "Packaging and Applying Patches" section below for more details.
@@ -44,21 +44,21 @@ For the artifact document, please access [Artifact for LEGOSim](./artifact/READM
 5. Compile and install snipersim. The new version provides automated compilation scripts, just run make.
 
     ```
-    cd snipersim
+    cd dependencies/snipersim
     make -j4
     ```
 
 6. Compile and install Gem5. Check Gem5 documentation for detailed installation guide. LEGOSim can run X86 and ARM architecture simulations:
 
     ```
-    cd gem5
+    cd dependencies/gem5
     scons build/X86/gem5.opt
     ```
 
     or
 
     ```
-    cd gem5
+    cd dependencies/gem5
     scons build/ARM/gem5.opt
     ```
 
@@ -70,14 +70,14 @@ For the artifact document, please access [Artifact for LEGOSim](./artifact/READM
     After configuring CUDA and compiler, run make.
 
     ```
-    cd gpgpu-sim
+    cd dependencies/gpgpu-sim
     make -j4
     ```
 
 8. Compile and install popnet
 
     ```
-    cd popnet_chiplet
+    cd dependencies/popnet_chiplet
     mkdir build
     cd build
     cmake ..
@@ -110,7 +110,7 @@ For later SSH sessions, if the `chiplet` container and benchmark executables are
 docker start chiplet
 docker exec -it chiplet bash
 cd /workspace/sim
-source setup_env.sh
+source scripts/setup_env.sh
 cd benchmark/matmul_test
 make run
 ```
@@ -122,7 +122,7 @@ Run the first two commands on the host and the remaining commands inside the con
 1. Set simulator environment
 
     ```
-    source setup_env.sh
+    source scripts/setup_env.sh
     ```
 
 2. Compile executable
@@ -158,22 +158,22 @@ Since sniper and GPGPUSim are introduced as submodules, modifications aren't tra
 patch.sh script generates patches:
 
 ```
-./patch.sh
+./scripts/patch.sh
 ```
 
 1. Packages modifications to snipersim.diff and gpgpu-sim.diff in interchiplet/patch. diff files are git tracked.
-2. Also saves modified files in .changed_files folder maintaining directory structure, for reference if diff files have issues.
+2. Also saves modified files in interchiplet/patch/changed_files folder maintaining directory structure, for reference if diff files have issues.
 
 apply_patch.sh script applies patches:
 
 ```
-./apply_patch.sh
+./scripts/apply_patch.sh
 ```
 
-1. Applies snipersim.diff, gpgpu-sim.diff, gem5.diff, popnet.diff and scale-sim.diff to snipersim, gpgpu-sim , gem5, popnet and scale-sim.
-2. If application fails, refer to files in .changed_files for manual modification.
+1. Applies snipersim.diff, gpgpu-sim.diff, gem5.diff, popnet.diff and scale-sim.diff to snipersim, gpgpu-sim, gem5, popnet and scale-sim under dependencies/.
+2. If application fails, refer to files in interchiplet/patch/changed_files for manual modification.
 
-Note: Not recommended to directly copy from .changed_files to snipersim and gpgpu-sim folders. Snipersim and gpgpu-sim evolution might modify same files as chiplet simulator. Patches report conflicts, direct copying causes unpredictable errors.
+Note: Not recommended to directly copy from interchiplet/patch/changed_files to the snipersim and gpgpu-sim folders under dependencies/. Snipersim and gpgpu-sim evolution might modify same files as chiplet simulator. Patches report conflicts, direct copying causes unpredictable errors.
 
 # Adding Test Programs
 
@@ -193,13 +193,13 @@ phase1:
     args: ["0", "1"]
     log: "gpgpusim.0.1.log"
     is_to_stdout: false
-    pre_copy: "$SIMULATOR_ROOT/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"
+    pre_copy: "$SIMULATOR_ROOT/dependencies/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"
   # Process 1
   - cmd: "$BENCHMARK_ROOT/bin/matmul_cu"
     args: ["1", "0"]
     log: "gpgpusim.1.0.log"
     is_to_stdout: false
-    pre_copy: "$SIMULATOR_ROOT/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"
+    pre_copy: "$SIMULATOR_ROOT/dependencies/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"
   ......
 
 # Phase 2 configuration.

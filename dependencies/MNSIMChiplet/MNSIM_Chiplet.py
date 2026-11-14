@@ -235,7 +235,7 @@ def temporalModel(layer_type, weights_path, id):
 def readFromC(id):
     
     # with open('./MNSIMChiplet_' + str(id[0]) + '_' + str(id[1]) + '.cfg', "rb") as f:
-    with open('/home/qc/Chiplet_Heterogeneous_newVersion_gem5/Chiplet_Heterogeneous_newVersion/tasks-vgg13/MNSIMChiplet_' + str(id[0]) + '_' + str(id[1]) + '.cfg', "rb") as f:
+    with open(os.environ['SIMULATOR_ROOT'] + '/dependencies/MNSIMChiplet/tasks-vgg13/MNSIMChiplet_' + str(id[0]) + '_' + str(id[1]) + '.cfg', "rb") as f:
         cfg_dict = pickle.load(f)
         
     return cfg_dict

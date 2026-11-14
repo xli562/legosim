@@ -9,10 +9,10 @@ In real GPGPU systems, benchmark APIs will be scheduled to particular APIs. For 
 
 CUDA runtime APIs are declared and implemented in the CUDA kit. GPGPUSim provides a different runtime library **libcudart.so** rather than the standard runtime library from the CUDA kit. When compiling CUDA executable files, nvcc will link the standard runtime library.
 
-Benchmark APIs are added to the runtime library provided by GPGPUSim. APIs are implemented in file *$SIMULATOR_ROOT/gpgpu-sim/libcuda/cuda_runtime_api.cc*. Hence, when compiling CUDA executable files, the path to search libraries must be redirected to GPGPUSim:
+Benchmark APIs are added to the runtime library provided by GPGPUSim. APIs are implemented in file *$SIMULATOR_ROOT/dependencies/gpgpu-sim/libcuda/cuda_runtime_api.cc*. Hence, when compiling CUDA executable files, the path to search libraries must be redirected to GPGPUSim:
 
 ```
-nvcc -L$(SIMULATOR_ROOT)/gpgpu-sim/lib/$(GPGPUSIM_CONFIG) --cudart shared $(CUDA_OBJS) -o $(CUDA_TARGET)
+nvcc -L$(SIMULATOR_ROOT)/dependencies/gpgpu-sim/lib/$(GPGPUSIM_CONFIG) --cudart shared $(CUDA_OBJS) -o $(CUDA_TARGET)
 ```
 
 ### sendMessage and receiveMessage
@@ -69,7 +69,7 @@ cudaMemcpy(interdata, __addr, __nbyte, cudaMemcpyDeviceToHost);
 cudaMemcpy(__addr, interdata, __nbyte, cudaMemcpyHostToDevice);
 ```
 
-GPGPUSim is a cycle-driven simulator whose cycle loop can be found in file *\$SIMULATOR_ROOT/gpgpu-sim/src/gpgpu-sim/gpu-sim.h* and *\$SIMULATOR_ROOT/gpgpu-sim/src/gpgpu-sim/gpu-sim.cc*.
+GPGPUSim is a cycle-driven simulator whose cycle loop can be found in file *\$SIMULATOR_ROOT/dependencies/gpgpu-sim/src/gpgpu-sim/gpu-sim.h* and *\$SIMULATOR_ROOT/dependencies/gpgpu-sim/src/gpgpu-sim/gpu-sim.cc*.
 
 GPGPUSim applies two variables to record the execution cycles: `gpgpu_sim::gpu_sim_cycle` and `gpgpu_sim::gpu_tot_sim_cycle`. The sum of these two variables presents the real consumed cycle, which should be replaced by the cycle value in the SYNC command.
 

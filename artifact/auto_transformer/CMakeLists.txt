@@ -19,11 +19,11 @@ set(CMAKE_CXX_COMPILER "/home/qc/gcc-9.4.0/bin/g++")
 
 # Add include directories
 include_directories(${SIMULATOR_ROOT}/interchiplet/includes)
-include_directories(${SIMULATOR_ROOT}/snipersim/include)
+include_directories(${SIMULATOR_ROOT}/dependencies/snipersim/include)
 
 # Set C++ library paths
 set(INTERCHIPLET_C_LIB "${SIMULATOR_ROOT}/interchiplet/lib/libinterchiplet_c.a")
-set(SNIPERSIM_LIB "${SIMULATOR_ROOT}/snipersim/lib/libcarbon_sim.a")
+set(SNIPERSIM_LIB "${SIMULATOR_ROOT}/dependencies/snipersim/lib/libcarbon_sim.a")
 
 # Set output directories - matching makefile structure
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -72,7 +72,7 @@ add_custom_command(
 add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/bin/matmul_cu
     DEPENDS ${CMAKE_BINARY_DIR}/cuobj/matmul.o
-    COMMAND nvcc -L${SIMULATOR_ROOT}/gpgpu-sim/lib/$ENV{GPGPUSIM_CONFIG} --cudart shared ${CMAKE_BINARY_DIR}/cuobj/matmul.o -o ${CMAKE_BINARY_DIR}/bin/matmul_cu
+    COMMAND nvcc -L${SIMULATOR_ROOT}/dependencies/gpgpu-sim/lib/$ENV{GPGPUSIM_CONFIG} --cudart shared ${CMAKE_BINARY_DIR}/cuobj/matmul.o -o ${CMAKE_BINARY_DIR}/bin/matmul_cu
     COMMENT "Linking CUDA executable"
 )
 

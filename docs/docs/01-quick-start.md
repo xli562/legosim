@@ -27,7 +27,7 @@ git submodule update
 **3. Setup environment.**
 
 ```shell
-source setup_env.sh
+source scripts/setup_env.sh
 ```
 
 If the operation succeeds, `setup_environment succeeded` is printed to the terminal.
@@ -45,7 +45,7 @@ The installation procedure can be skipped for unnecessary simulators.
 **5.1. Compile SniperSim.**
 
 ```shell
-cd snipersim
+cd dependencies/snipersim
 make -j4
 ```
 
@@ -54,31 +54,31 @@ make -j4
 If requirements have been addressed, X86 and ARM simulators can be used in LegoSim.
 
 ```shell
-cd gem5
+cd dependencies/gem5
 scons build/X86/gem5.opt -j4
 ```
 
 or
 
 ```shell
-cd gem5
+cd dependencies/gem5
 scons build/ARM/gem5.opt -j4
 ```
 
 **5.3. Compile GPGPUSim.** Installation of GPGPUSim requires the following conditions:
 
-- CUDA environment is correctly installed and configured. Imported GPGPUSim supports CUDA versions from 4.0 to 11.0. See README within *gpgpu-sim* for details.
+- CUDA environment is correctly installed and configured. Imported GPGPUSim supports CUDA versions from 4.0 to 11.0. See README within *dependencies/gpgpu-sim* for details.
 - GPGPUSim has a limitation on the compiler version. According to our experiment, GCC7 is recommended.
 
 ```shell
-cd gpgpu-sim
+cd dependencies/gpgpu-sim
 make -j4
 ```
 
 **6. Compile Popnet.**
 
 ```shell
-cd popnet
+cd dependencies/popnet_chiplet
 mkdir build
 cd build
 cmake ..
@@ -104,7 +104,7 @@ To check whether the LegoSim is installed and configured correctly, you can exec
 **1. Setup environment.**
 
 ```shell
-source setup_env.sh
+source scripts/setup_env.sh
 ```
 
 If the operation succeeds, `setup_environment succeeded` is printed to the terminal.
@@ -166,7 +166,7 @@ If the benchmark executes correctly, you will find it experiences two rounds of 
 [2024-06-23 14:49:32.219] [info] Quit simulation because simulation cycle has converged.
 [2024-06-23 14:49:32.219] [info] **** End of Simulation ****
 [2024-06-23 14:49:32.219] [info] Benchmark elapses 2909345 cycle.
-[2024-06-23 14:49:32.219] [info] Simulation elapseds 0d 0h 0m 33s.
+[2024-06-23 14:49:32.219] [info] Simulation elapsed 0d 0h 0m 33s.
 ```
 
 The cycle elapsed by benchmark is about 5.77M cycles with a minor error on different platforms. The time elapsed by the simulator depends on the performance of the host machines, so it varies across different platforms.

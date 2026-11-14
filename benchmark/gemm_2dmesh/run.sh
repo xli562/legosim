@@ -3,10 +3,10 @@
 # Run from the host; prints the fresh run directory it creates.
 set -e
 
-docker exec chiplet bash -c '
+docker exec -u $(id -u):$(id -g) chiplet bash -c '
 set -e
 cd /workspace/sim
-source setup_env.sh
+source scripts/setup_env.sh
 
 bench=/workspace/sim/benchmark/gemm_2dmesh
 make -C "$bench"

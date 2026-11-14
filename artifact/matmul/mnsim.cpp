@@ -19,9 +19,9 @@ int main(int argc, char** argv)
     global_pipe_comm.read_data(fileName.c_str(), size_A, size * sizeof(int64_t));
     long long int time_end = InterChiplet::readSync(timeNow, 5, 5, idX, idY, size * sizeof(int64_t), 0);
 
-    system("cd /home/qc/Chiplet_Heterogeneous_newVersion_gem5/Chiplet_Heterogeneous_newVersion/MNSIMChiplet;python3 MNSIM_Chiplet.py -ID1 0 -ID2 2");
+    system("cd $SIMULATOR_ROOT/dependencies/MNSIMChiplet;python3 MNSIM_Chiplet.py -ID1 0 -ID2 2");
 
-    std::ifstream inputFile("/home/qc/Chiplet_Heterogeneous_newVersion_gem5/Chiplet_Heterogeneous_newVersion/MNSIMChiplet/result_0_2.res");
+    std::ifstream inputFile(std::string(getenv("SIMULATOR_ROOT")) + "/dependencies/MNSIMChiplet/result_0_2.res");
     float time;
     inputFile >> time;
     long long unsigned int true_time = (long long unsigned int)time;

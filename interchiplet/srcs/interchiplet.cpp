@@ -495,6 +495,6 @@ int main(int argc, const char* argv[]) {
     gettimeofday(&simend, 0);
     unsigned long elaped_sec = simend.tv_sec - simstart.tv_sec;
     spdlog::info("Benchmark elapses {} cycle.", static_cast<InterChiplet::TimeType>(sim_cycle));
-    spdlog::info("Simulation elapseds {}d {}h {}m {}s.", elaped_sec / 3600 / 24,
+    spdlog::info("Simulation elapsed {}d {}h {}m {}s.", elaped_sec / 3600 / 24,
                  (elaped_sec / 3600) % 24, (elaped_sec / 60) % 60, elaped_sec % 60);
 }

@@ -48,7 +48,7 @@ DDR_target: $(DDR_OBJS)
 
 # CUDA language target
 # CUDA_target: $(CUDA_OBJS)
-# 	$(NVCC) -L$(SIMULATOR_ROOT)/gpgpu-sim/lib/$(GPGPUSIM_CONFIG) -g --cudart shared $(CUDA_OBJS) -o $(CUDA_TARGET)
+# 	$(NVCC) -L$(SIMULATOR_ROOT)/dependencies/gpgpu-sim/lib/$(GPGPUSIM_CONFIG) -g --cudart shared $(CUDA_OBJS) -o $(CUDA_TARGET)
 
 # Rule for C object
 obj/%.o: %.cpp

@@ -49,7 +49,7 @@ debug: CFLAGS += -DDEBUG -g
 debug: all
 
 gpgpusim_target: $(CUDA_OBJS)
-	$(NVCC) -L$(SIMULATOR_ROOT)/gpgpu-sim/lib/$(GPGPUSIM_CONFIG) -g --cudart shared $(CUDA_OBJS) -o $(CUDA_TARGET)
+	$(NVCC) -L$(SIMULATOR_ROOT)/dependencies/gpgpu-sim/lib/$(GPGPUSIM_CONFIG) -g --cudart shared $(CUDA_OBJS) -o $(CUDA_TARGET)
 
 # NPU language target
 NPU_target: $(NPU_OBJS)

@@ -20,7 +20,7 @@ int main(int argc, char** argv)
         global_pipe_comm.read_data(fileName.c_str(), size_A, size * sizeof(int64_t));
         long long int time_end = InterChiplet::readSync(timeNow, 5, 5, idX, idY, size * sizeof(int64_t), 0);
 
-        // system("cd /home/qc/Chiplet_Heterogeneous_newVersion_gem5/Chiplet_Heterogeneous_newVersion/MNSIMChiplet;python3 MNSIM_Chiplet.py -ID1 0 -ID2 2");
+        // system("cd $SIMULATOR_ROOT/dependencies/MNSIMChiplet;python3 MNSIM_Chiplet.py -ID1 0 -ID2 2");
 
         std::ifstream inputFile("/home/qc/scale-sim-v2/test_runs/GoogleTPU_v1_ws/total_cycle.txt");
         float time;
