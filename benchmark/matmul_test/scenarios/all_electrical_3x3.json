@@ -1,0 +1,18 @@
+{
+  "name": "all_electrical_3x3",
+  "coordinate_width": 3,
+  "edges": {
+    "0-1": "electrical",
+    "0-3": "electrical",
+    "1-2": "electrical",
+    "1-4": "electrical",
+    "2-5": "electrical",
+    "3-4": "electrical",
+    "3-6": "electrical",
+    "4-5": "electrical",
+    "4-7": "electrical",
+    "5-8": "electrical",
+    "6-7": "electrical",
+    "7-8": "electrical"
+  }
+}

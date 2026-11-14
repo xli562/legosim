@@ -11,6 +11,8 @@ INTERCHIPLET=../../interchiplet/bin/interchiplet
 C_SRCS=matmul.cpp
 C_OBJS=obj/matmul.o
 C_TARGET=bin/matmul_c
+CHECKED_C_TARGET=bin/matmul_checked_c
+NPU_TARGET=bin/matmul_npu
 
 # Compiler environment of CUDA
 NVCC=nvcc
@@ -23,13 +25,32 @@ CUDA_TARGET=bin/matmul_cu
 
 all: bin_dir obj_dir cuobj_dir C_target CUDA_target
 
+# Build the checked CPU and the GPU worker from their current sources.
+checked: bin_dir obj_dir cuobj_dir $(CHECKED_C_TARGET) $(CUDA_TARGET)
+
+npu_checked: bin_dir obj_dir $(NPU_TARGET)
+
+$(NPU_TARGET): obj/matmul_npu.o
+	$(CC) $< $(INTERCHIPLET_C_LIB) -o $@
+
+obj/matmul_npu.o: matmul_npu.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(CHECKED_C_TARGET): obj/matmul_checked.o
+	$(CC) $< $(INTERCHIPLET_C_LIB) -o $@
+
+obj/matmul_checked.o: matmul.cpp
+	$(CC) $(CFLAGS) -DVALIDATE_MATMUL -c $< -o $@
+
 # C language target
 C_target: $(C_OBJS)
 	$(CC) $(C_OBJS) $(INTERCHIPLET_C_LIB) -o $(C_TARGET)
 
 # CUDA language target
-CUDA_target: $(CUDA_OBJS)
-	$(NVCC) -L$(SIMULATOR_ROOT)/gpgpu-sim/lib/$(GPGPUSIM_CONFIG) --cudart shared $(CUDA_OBJS) -o $(CUDA_TARGET)
+CUDA_target: $(CUDA_TARGET)
+
+$(CUDA_TARGET): $(CUDA_OBJS)
+	$(NVCC) -L$(SIMULATOR_ROOT)/gpgpu-sim/lib/$(GPGPUSIM_CONFIG) --cudart shared $(CUDA_OBJS) -o $@
 
 # Rule for C object
 obj/%.o: %.cpp

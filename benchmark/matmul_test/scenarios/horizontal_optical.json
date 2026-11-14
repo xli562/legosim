@@ -1,0 +1,9 @@
+{
+  "name": "horizontal_optical",
+  "edges": {
+    "0-1": "optical",
+    "0-2": "electrical",
+    "1-3": "electrical",
+    "2-3": "optical"
+  }
+}

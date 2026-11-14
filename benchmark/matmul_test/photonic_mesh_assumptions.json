@@ -1,0 +1,20 @@
+{
+  "purpose": "Illustrative placeholder values; not calibrated to a fabrication process",
+  "coordinate_width": 2,
+  "simulated_clock_hz": 1000000000,
+  "flit_bits": 128,
+  "graph_edge_delay_cycles": 4,
+  "wavelengths_per_direction": 8,
+  "bit_rate_per_wavelength_bps": 16000000000,
+  "link_length_mm": 10,
+  "waveguide_pitch_um": 5,
+  "dynamic_energy_j_per_transmitted_bit_per_hop": 1.5e-12,
+  "laser_power_w_per_direction": 0.001,
+  "ring_tuning_power_w_per_direction": 0.0002,
+  "transceiver_area_mm2_per_direction": 0.02,
+  "router_dynamic_energy_j_per_transmitted_bit_per_router": 4e-13,
+  "router_static_power_w_per_router": 0.0005,
+  "router_area_mm2_per_router": 0.04,
+  "assumed_directions_per_edge": 2,
+  "assumed_static_active_interval": "entire workload completion time"
+}

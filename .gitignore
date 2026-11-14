@@ -39,7 +39,3 @@ benchmark/matmul_test/delayInfo.txt
 benchmark/matmul_test/pacCountInfo.txt
 benchmark/matmul_test/buffer*
 benchmark/matmul_test/*.log
-
-# temporary
-benchmark/matmul_test
-tools/

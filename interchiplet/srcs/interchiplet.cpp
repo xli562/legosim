@@ -459,11 +459,14 @@ int main(int argc, const char* argv[]) {
         gettimeofday(&roundstart, 0);
         spdlog::info("**** Round {} Phase 1 ****", round);
         InterChiplet::InnerTimeType round_cycle =
-            __loop_phase_one(round, configs.m_phase1_proc_cfg_list, configs.m_phase2_proc_cfg_list,
+            __loop_phase_one(round,
+                             configs.m_phase1_proc_cfg_list,
+                             configs.m_phase2_proc_cfg_list,
                              width);
 
         // Get simulation cycle.
-        // If simulation cycle this round is close to the previous one, quit iteration.
+        // If simulation cycle this round is close to the previous one,
+        //   quit iteration.
         spdlog::info("Benchmark elapses {} cycle.",
                      static_cast<InterChiplet::TimeType>(round_cycle));
         if (round > 1) {

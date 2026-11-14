@@ -1,0 +1,34 @@
+# Demonstration of a 2x2 mesh whose four inter-router links are interpreted
+# as independent, bidirectional photonic waveguides. Device costs are in
+# photonic_mesh_assumptions.json and tools/photonic_mesh_report.py.
+phase1:
+  - cmd: "$BENCHMARK_ROOT/bin/matmul_cu"
+    args: ["0", "1"]
+    log: "gpgpusim.0.1.log"
+    is_to_stdout: false
+    clock_rate: 1
+    pre_copy: "$SIMULATOR_ROOT/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"
+  - cmd: "$BENCHMARK_ROOT/bin/matmul_cu"
+    args: ["1", "0"]
+    log: "gpgpusim.1.0.log"
+    is_to_stdout: false
+    clock_rate: 1
+    pre_copy: "$SIMULATOR_ROOT/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"
+  - cmd: "$BENCHMARK_ROOT/bin/matmul_cu"
+    args: ["1", "1"]
+    log: "gpgpusim.1.1.log"
+    is_to_stdout: false
+    clock_rate: 1
+    pre_copy: "$SIMULATOR_ROOT/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"
+  - cmd: "$SIMULATOR_ROOT/snipersim/run-sniper"
+    args: ["--", "$BENCHMARK_ROOT/bin/matmul_checked_c", "0", "0"]
+    log: "sniper.0.0.log"
+    is_to_stdout: false
+    clock_rate: 1
+
+phase2:
+  - cmd: "$SIMULATOR_ROOT/popnet_chiplet/build/popnet"
+    args: ["-A", "4", "-c", "1", "-V", "3", "-B", "12", "-O", "12", "-F", "2", "-L", "1000", "-T", "1000000000", "-r", "1", "-I", "../bench.txt", "-G", "$SIMULATOR_ROOT/benchmark/matmul_test/topology/photonic_mesh_2_2.gv", "-R", "4", "-D", "../delayInfo.txt", "-P"]
+    log: "popnet_0.log"
+    is_to_stdout: false
+    clock_rate: 1

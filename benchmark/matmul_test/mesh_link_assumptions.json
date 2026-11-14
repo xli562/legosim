@@ -1,0 +1,32 @@
+{
+  "purpose": "Illustrative electrical and optical values for a controlled 2x2 mesh comparison; not calibrated",
+  "coordinate_width": 2,
+  "simulated_clock_hz": 1000000000,
+  "flit_bits": 128,
+  "router_pipeline_stage_delay_cycles": 1,
+  "router_pipeline_stages": 5,
+  "router": {
+    "dynamic_energy_j_per_transmitted_bit_per_visit": 4e-13,
+    "static_power_w_per_router": 0.0005,
+    "area_mm2_per_router": 0.04
+  },
+  "optical": {
+    "edge_delay_cycles": 4,
+    "wavelengths_per_direction": 8,
+    "bit_rate_per_wavelength_bps": 16000000000,
+    "dynamic_energy_j_per_transmitted_bit_hop": 1.5e-12,
+    "static_power_w_per_direction": 0.0012,
+    "length_mm": 10,
+    "routing_pitch_um": 5,
+    "interface_area_mm2_per_direction": 0.02
+  },
+  "electrical": {
+    "edge_delay_cycles": 8,
+    "assumed_bit_rate_bps_per_direction": 128000000000,
+    "dynamic_energy_j_per_transmitted_bit_hop": 2.5e-12,
+    "static_power_w_per_direction": 0.0001,
+    "length_mm": 10,
+    "routing_pitch_um": 0.5,
+    "interface_area_mm2_per_direction": 0.015
+  }
+}

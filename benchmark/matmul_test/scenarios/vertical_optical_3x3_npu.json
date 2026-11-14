@@ -1,0 +1,20 @@
+{
+  "name": "vertical_optical_3x3_npu",
+  "coordinate_width": 3,
+  "edges": {
+    "0-1": "electrical",
+    "0-3": "optical",
+    "1-2": "electrical",
+    "1-4": "optical",
+    "2-5": "optical",
+    "3-4": "electrical",
+    "3-6": "optical",
+    "4-5": "electrical",
+    "4-7": "optical",
+    "5-8": "optical",
+    "6-7": "electrical",
+    "7-8": "electrical"
+  },
+  "worker3_kind": "npu",
+  "npu_compute_cycles": 128
+}

@@ -3,6 +3,7 @@ site_name: Documents for LegoSim
 nav:
   - index.md
   - 01-quick-start.md
+  - Research workflow: 05-research-workflow.md
   - Benchmarks:
     - APIs:
       - 02-benchmarks/021-apis/index.md

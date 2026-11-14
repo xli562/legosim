@@ -1,0 +1,40 @@
+{
+  "name": "all_optical_3x3_npu_short_edge01",
+  "coordinate_width": 3,
+  "edges": {
+    "0-1": "optical",
+    "0-3": "optical",
+    "1-2": "optical",
+    "1-4": "optical",
+    "2-5": "optical",
+    "3-4": "optical",
+    "3-6": "optical",
+    "4-5": "optical",
+    "4-7": "optical",
+    "5-8": "optical",
+    "6-7": "optical",
+    "7-8": "optical"
+  },
+  "worker3_kind": "npu",
+  "npu_compute_cycles": 129,
+  "edge_parameters": {
+    "0-1": {
+      "edge_delay_cycles": 2,
+      "dynamic_energy_j_per_transmitted_bit_hop": 1.242809940328111e-13,
+      "static_power_w_per_direction": 0.014424366567162571,
+      "length_mm": 5.0,
+      "routing_pitch_um": 4.0,
+      "interface_area_mm2_per_direction": 0.006534080878137304
+    }
+  },
+  "edge_profile_sources": {
+    "0-1": {
+      "path": "run_outputs/dsent_optical_5mm/mesh_link_assumptions_dsent.json",
+      "sha256": "e1b16b5d0f3c28fa76229dc1494825e0d5c7db5e864a266eb1cad4630b55c741"
+    }
+  },
+  "npu_timing": {
+    "path": "run_outputs/scalesim_npu_tile/npu_timing.json",
+    "sha256": "eef214e12879f349817008f01272c3f493d382df17743891b9e7344710f641ef"
+  }
+}

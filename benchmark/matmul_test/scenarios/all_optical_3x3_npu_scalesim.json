@@ -1,0 +1,24 @@
+{
+  "name": "all_optical_3x3_npu_scalesim",
+  "coordinate_width": 3,
+  "edges": {
+    "0-1": "optical",
+    "0-3": "optical",
+    "1-2": "optical",
+    "1-4": "optical",
+    "2-5": "optical",
+    "3-4": "optical",
+    "3-6": "optical",
+    "4-5": "optical",
+    "4-7": "optical",
+    "5-8": "optical",
+    "6-7": "optical",
+    "7-8": "optical"
+  },
+  "worker3_kind": "npu",
+  "npu_compute_cycles": 129,
+  "npu_timing": {
+    "path": "run_outputs/scalesim_npu_tile/npu_timing.json",
+    "sha256": "eef214e12879f349817008f01272c3f493d382df17743891b9e7344710f641ef"
+  }
+}
