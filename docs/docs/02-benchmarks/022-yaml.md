@@ -19,21 +19,21 @@ phase1:
     args: ["0", "1"]
     log: "gpgpusim.0.1.log"
     is_to_stdout: false
-    pre_copy: "$SIMULATOR_ROOT/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"
+    pre_copy: "$SIMULATOR_ROOT/dependencies/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"
     clock_rate: 1
   # Process 1
   - cmd: "$BENCHMARK_ROOT/bin/matmul_cu"
     args: ["1", "0"]
     log: "gpgpusim.1.0.log"
     is_to_stdout: false
-    pre_copy: "$SIMULATOR_ROOT/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"
+    pre_copy: "$SIMULATOR_ROOT/dependencies/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"
     clock_rate: 1
   ......
 
 # Phase 2 configuration.
 phase2:
   # Process 0
-  - cmd: "$SIMULATOR_ROOT/popnet_chiplet/build/popnet"
+  - cmd: "$SIMULATOR_ROOT/dependencies/popnet_chiplet/build/popnet"
     args: ["-A", "2", "-c", "2", "-V", "3", "-B", "12", "-O", "12", "-F", "4", "-L", "1000", "-T", "10000000", "-r", "1", "-I", "../bench.txt", "-R", "0", "-D", "../delayInfo.txt", "-P"]
     log: "popnet_0.log"
     is_to_stdout: false

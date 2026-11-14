@@ -4,6 +4,14 @@
 !*.*
 !*/
 ![Mm]ake[Ff]ile
+![Dd]ocker[Ff]ile
+
+# Compiled binaries (makefiles build into bin/)
+benchmark/**/bin/
+*.out
+*.so
+*.a
+**pycache**
 
 # Workspace configuration
 .vscode
@@ -16,6 +24,7 @@ run_outputs
 *.pdf
 *.o
 
+# Scratch directory
 scratch
 
 interchiplet/bin

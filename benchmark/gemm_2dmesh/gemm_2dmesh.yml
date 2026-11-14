@@ -1,0 +1,57 @@
+phase1:
+  - cmd: "$SIMULATOR_ROOT/dependencies/snipersim/run-sniper"
+    args: ["--", "$BENCHMARK_ROOT/bin/cpu"]
+    log: "sniper.1.1.log"
+    is_to_stdout: false
+    clock_rate: 1
+  - cmd: "$BENCHMARK_ROOT/bin/asic"
+    args: ["0", "5"]
+    log: "asic.0.log"
+    is_to_stdout: false
+    clock_rate: 1
+  - cmd: "$BENCHMARK_ROOT/bin/asic"
+    args: ["1", "5"]
+    log: "asic.1.log"
+    is_to_stdout: false
+    clock_rate: 1
+  - cmd: "$BENCHMARK_ROOT/bin/asic"
+    args: ["2", "5"]
+    log: "asic.2.log"
+    is_to_stdout: false
+    clock_rate: 1
+  - cmd: "$BENCHMARK_ROOT/bin/asic"
+    args: ["3", "5"]
+    log: "asic.3.log"
+    is_to_stdout: false
+    clock_rate: 1
+  - cmd: "$BENCHMARK_ROOT/bin/asic"
+    args: ["4", "5"]
+    log: "asic.4.log"
+    is_to_stdout: false
+    clock_rate: 1
+  - cmd: "$BENCHMARK_ROOT/bin/asic"
+    args: ["5", "5"]
+    log: "asic.5.log"
+    is_to_stdout: false
+    clock_rate: 1
+  - cmd: "$BENCHMARK_ROOT/bin/asic"
+    args: ["6", "5"]
+    log: "asic.6.log"
+    is_to_stdout: false
+    clock_rate: 1
+  - cmd: "$BENCHMARK_ROOT/bin/asic"
+    args: ["7", "5"]
+    log: "asic.7.log"
+    is_to_stdout: false
+    clock_rate: 1
+
+phase2:
+  - cmd: "$SIMULATOR_ROOT/dependencies/popnet_chiplet/build/popnet"
+    args: ["-A", "9", "-c", "1", "-R", "4",
+           "-G", "$SIMULATOR_ROOT/benchmark/gemm_2dmesh/topology/2dmesh.gv",
+           "-F", "2", "-I", "../bench.txt", "-D", "../delayInfo.txt",
+           "-V", "3", "-B", "12", "-O", "12", "-L", "1000",
+           "-T", "1000000000", "-r", "1", "-P"]
+    log: "popnet_0.log"
+    is_to_stdout: false
+    clock_rate: 1

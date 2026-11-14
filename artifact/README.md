@@ -95,7 +95,7 @@ Load benchmark configuration from ...
 [info] Quit simulation because simulation cycle has converged.
 [info] **** End of Simulation ****
 [info] Benchmark elapses xxxxxx cycle.
-[info] Simulation elapseds xx d xx h xxm xx s.
+[info] Simulation elapsed xx d xx h xxm xx s.
 
 # Example output of bottleneck_{topology}_flit_{flit_size}.log
 All deduplicated communication records:

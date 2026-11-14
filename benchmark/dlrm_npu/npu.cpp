@@ -19,9 +19,9 @@ int main(int argc, char** argv)
     global_pipe_comm.read_data(fileName.c_str(), size_A, size * sizeof(int64_t));
     long long int time_end = InterChiplet::readSync(timeNow, 3, 3, idX, idY, size * sizeof(int64_t), 0);
 
-    system("cd $SIMULATOR_ROOT/scale-sim-v2 && pip3 install -e . && python -m scalesim.scale -c $SIMULATOR_ROOT/scale-sim-v2/configs/google.cfg -t $SIMULATOR_ROOT/scale-sim-v2/topologies/dlrm/dlrm_fwd.csv -p $SIMULATOR_ROOT/scale-sim-v2/test_runs");
+    system("cd $SIMULATOR_ROOT/dependencies/scale-sim-v2 && pip3 install -e . && python -m scalesim.scale -c $SIMULATOR_ROOT/dependencies/scale-sim-v2/configs/google.cfg -t $SIMULATOR_ROOT/dependencies/scale-sim-v2/topologies/dlrm/dlrm_fwd.csv -p $SIMULATOR_ROOT/dependencies/scale-sim-v2/test_runs");
 
-    std::ifstream inputFile("$SIMULATOR_ROOT/scale-sim-v2/test_runs/total_cycle.txt");
+    std::ifstream inputFile("$SIMULATOR_ROOT/dependencies/scale-sim-v2/test_runs/total_cycle.txt");
     float time;
     inputFile >> time;
     long long unsigned int true_time = (long long unsigned int)time;

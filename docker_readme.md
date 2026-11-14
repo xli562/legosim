@@ -130,7 +130,7 @@ docker images | grep chiplet-sim
 
 > 仿真器代码假定放在宿主机 `~/Chiplet_Heterogeneous_newVersion`
 > （请按实际路径替换）。这个目录**必须已经 `git submodule update` 拉好了所有子模块**，即已经完成了git submodule init和git submodule update。
-> （snipersim / gpgpu-sim / popnet_chiplet / gem5 / interchiplet/thirdparty/*）。
+> （dependencies/{snipersim,gpgpu-sim,popnet_chiplet,gem5,scale-sim-v2} / interchiplet/thirdparty/*）。
 
 ### 5.1 启动容器
 
@@ -170,7 +170,7 @@ git config --global http.proxy http://127.0.0.1:7890
 git config --global https.proxy http://127.0.0.1:7890
 
 # source 仿真器环境
-source setup_env.sh
+source scripts/setup_env.sh
 # 期望输出末尾: setup_environment succeeded
 ```
 
@@ -179,7 +179,7 @@ source setup_env.sh
 ### 5.3 容器内：打 patch（首次）
 
 ```bash
-./apply_patch.sh
+./scripts/apply_patch.sh
 # 首次应当无报错。若报 "already exists" 说明 patch 已应用过，忽略即可。
 ```
 
@@ -188,20 +188,20 @@ source setup_env.sh
 ```bash
 # 1) sniper
 #    首次会从 snipersim.org 下 pinplay tar (~44MB)、从 GitHub 拉 mbuild/xed
-cd $SIMULATOR_ROOT/snipersim
+cd $SIMULATOR_ROOT/dependencies/snipersim
 make -j4
 
 ls run-sniper      # 验证产物
 
 # 2) gpgpu-sim
-cd $SIMULATOR_ROOT/gpgpu-sim
+cd $SIMULATOR_ROOT/dependencies/gpgpu-sim
 source setup_environment    # 必须 source，会 export GPGPUSIM_CONFIG
 make -j4
 
 ls lib/$GPGPUSIM_CONFIG/libcudart.so   # 验证产物
 
 # 3) popnet
-cd $SIMULATOR_ROOT/popnet_chiplet
+cd $SIMULATOR_ROOT/dependencies/popnet_chiplet
 mkdir build
 cd build
 cmake ..
@@ -250,7 +250,7 @@ $SIMULATOR_ROOT/interchiplet/bin/interchiplet ./matmul.yml
 
 ### 6.1 容器内运行
 
-在容器内（已经 source 好 setup_env.sh 和 gpgpu-sim/setup_environment）：
+在容器内（已经 source 好 setup_env.sh 和 dependencies/gpgpu-sim/setup_environment）：
 
 ```bash
 cd $SIMULATOR_ROOT/benchmark/matmul_test
@@ -331,8 +331,8 @@ docker run -it --rm \
 
 容器内：
 ```bash
-source /workspace/sim/setup_env.sh
-source /workspace/sim/gpgpu-sim/setup_environment
+source /workspace/sim/scripts/setup_env.sh
+source /workspace/sim/dependencies/gpgpu-sim/setup_environment
 
 # 清理上次残留
 rm -rf proc_r* bench.txt delayInfo.txt buffer* *.log sync_time*.csv
@@ -368,8 +368,8 @@ docker run -it --rm \
 
 容器内：
 ```bash
-source /workspace/sim/setup_env.sh
-source /workspace/sim/gpgpu-sim/setup_environment
+source /workspace/sim/scripts/setup_env.sh
+source /workspace/sim/dependencies/gpgpu-sim/setup_environment
 
 # 先验证网络连通
 ping -c 2 coord
@@ -440,10 +440,10 @@ nc -zv coord 15000         # TCP 能连上
 如果 ping 不通，通常是两个容器没加同一个 `--network chiplet-net`。
 
 ### Q4：容器里 `run-sniper` 提示找不到 libcudart
-没 source 过 gpgpu-sim/setup_environment。每次进新容器都需要：
+没 source 过 dependencies/gpgpu-sim/setup_environment。每次进新容器都需要：
 ```bash
-source /workspace/sim/setup_env.sh
-source /workspace/sim/gpgpu-sim/setup_environment
+source /workspace/sim/scripts/setup_env.sh
+source /workspace/sim/dependencies/gpgpu-sim/setup_environment
 ```
 
 ### Q5：YAML 里 host 改成容器名后，原版 run_distributed.sh 还能跑吗

@@ -9,10 +9,10 @@
 #   and direct PopNet invocation, consistent with artifact/matmul
 
 phase1:
-  - cmd: "$SIMULATOR_ROOT/gem5/build/RISCV/gem5.opt"
+  - cmd: "$SIMULATOR_ROOT/dependencies/gem5/build/RISCV/gem5.opt"
     args:
       [
-        "$SIMULATOR_ROOT/gem5/configs/deprecated/example/chiplet_se.py",
+        "$SIMULATOR_ROOT/dependencies/gem5/configs/deprecated/example/chiplet_se.py",
         "--cpu-type",
         "RiscvChipletO3CPU",
         "--chiplet-role",
@@ -70,10 +70,10 @@ phase1:
     is_to_stdout: false
     clock_rate: 500
 
-  - cmd: "$SIMULATOR_ROOT/gem5/build/RISCV/gem5.opt"
+  - cmd: "$SIMULATOR_ROOT/dependencies/gem5/build/RISCV/gem5.opt"
     args:
       [
-        "$SIMULATOR_ROOT/gem5/configs/deprecated/example/chiplet_se.py",
+        "$SIMULATOR_ROOT/dependencies/gem5/configs/deprecated/example/chiplet_se.py",
         "--cpu-type",
         "RiscvChipletO3CPU",
         "--chiplet-role",
@@ -107,7 +107,7 @@ phase1:
     clock_rate: 800
 
 phase2:
-  - cmd: "$SIMULATOR_ROOT/popnet_chiplet/build/popnet"
+  - cmd: "$SIMULATOR_ROOT/dependencies/popnet_chiplet/build/popnet"
     args:
       [
         "-A",

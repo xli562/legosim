@@ -46,7 +46,7 @@ def generate_yaml_file_from_csv(csv_path="device_map.csv", yml_path="mlp_config.
                 file.write(f"  # Process {node_id}\n")
 
                 if device == "CPU":
-                    file.write(f'  - cmd: "$SIMULATOR_ROOT/snipersim/run-sniper"\n')
+                    file.write(f'  - cmd: "$SIMULATOR_ROOT/dependencies/snipersim/run-sniper"\n')
                     file.write(f'    args: ["-c","Intel.cfg","--roi", "--", "$BENCHMARK_ROOT/build/bin/DLRM", "0", "0"]\n')
                     file.write(f'    log: "sniper.{x}.{y}.log"\n')
                     file.write(f'    is_to_stdout: false\n')
@@ -57,14 +57,14 @@ def generate_yaml_file_from_csv(csv_path="device_map.csv", yml_path="mlp_config.
                     file.write(f'    log: "gpgpusim.{x}.{y}.log"\n')
                     file.write(f'    is_to_stdout: false\n')
                     file.write(f'    clock_rate: {clock_rate_map[node_id]}\n')
-                    file.write(f'    pre_copy: "$SIMULATOR_ROOT/gpgpu-sim/configs/tested-cfgs/SM6_TITANX/*"\n')
+                    file.write(f'    pre_copy: "$SIMULATOR_ROOT/dependencies/gpgpu-sim/configs/tested-cfgs/SM6_TITANX/*"\n')
 
                 else:
                     print(f"[警告] 不支持的设备类型: {device}，跳过节点 {node_id}")
             
             file.write("\nphase2:\n")
             file.write("  # Process 0\n")
-            file.write('  - cmd: "$SIMULATOR_ROOT/popnet_chiplet/build/popnet"\n')
+            file.write('  - cmd: "$SIMULATOR_ROOT/dependencies/popnet_chiplet/build/popnet"\n')
             file.write(f'    args: ["-A", "{width * height}", "-c", "1", "-V", "3", "-B", "12", "-O", "12", "-F", "2", "-L", "1000", "-T", "1000000000000000000000", "-r", "1", "-I", "../bench.txt", "-G", "{GV_path}", "-D", "../delayInfo.txt", "-P"]\n')
             file.write('    log: "popnet_0.log"\n')
             file.write('    is_to_stdout: false\n')

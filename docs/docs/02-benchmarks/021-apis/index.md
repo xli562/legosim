@@ -204,7 +204,7 @@ APIs on CUDA platforms are implemented by built-in CUDA APIs. The declaration of
 ```makefile
 # CUDA language target
 CUDA_target: $(CUDA_OBJS)
-	$(NVCC) -L$(SIMULATOR_ROOT)/gpgpu-sim/lib/$(GPGPUSIM_CONFIG) --cudart shared $(CUDA_OBJS) -o $(CUDA_TARGET)
+	$(NVCC) -L$(SIMULATOR_ROOT)/dependencies/gpgpu-sim/lib/$(GPGPUSIM_CONFIG) --cudart shared $(CUDA_OBJS) -o $(CUDA_TARGET)
 ```
 
 > TODO: A more flexible way to specify the source and the destination address.

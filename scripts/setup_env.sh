@@ -10,6 +10,6 @@ if [ -z "${CUDA_INSTALL_PATH:-}" ] || [ ! -d "$CUDA_INSTALL_PATH" ]; then
 fi
 
 export PATH="$CUDA_INSTALL_PATH/bin:$PATH"
-export SIMULATOR_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export SIMULATOR_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-source "$SIMULATOR_ROOT/gpgpu-sim/setup_environment"
+source "$SIMULATOR_ROOT/dependencies/gpgpu-sim/setup_environment"

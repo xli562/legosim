@@ -23,7 +23,7 @@ Each benchmark API corresponds to one system call. All arguments of the benchmar
 
 SniperSim provides separate functional and timing models. Hence, syscalls are handled separately in functional and timing models.
 
-In the functional model, system calls are handled in file *$SIMULATOR_ROOT/snipersim/sift/recorder/syscall_modeling.cc*. In the timing model, system calls are handled in file *\$SIMULATOR_ROOT/snipersim/common/core/syscall_model.cc*.
+In the functional model, system calls are handled in file *$SIMULATOR_ROOT/dependencies/snipersim/sift/recorder/syscall_modeling.cc*. In the timing model, system calls are handled in file *\$SIMULATOR_ROOT/dependencies/snipersim/common/core/syscall_model.cc*.
 
 ### Handle SYSCALL_REMOTE_WRITE/SYSCALL_REMOTE_READ
 
@@ -136,4 +136,4 @@ The mapping between system calls and commands is shown below:
 
 ## Issue CYCLE command
 
-Because the CPU always controls the flow of benchmarks, the CPU's execution cycle plays a vital role in the execution cycle of the entire simulation. CYCLE command is issued in file *$SIMULATOR_ROOT/snipersim/common/core/core.cc*.
+Because the CPU always controls the flow of benchmarks, the CPU's execution cycle plays a vital role in the execution cycle of the entire simulation. CYCLE command is issued in file *$SIMULATOR_ROOT/dependencies/snipersim/common/core/core.cc*.

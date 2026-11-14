@@ -17,7 +17,7 @@ def generate_yaml_file():
                 file.write(f'    log: "gpgpusim.{i}.{j}.log"\n')
                 file.write(f'    is_to_stdout: false\n')
                 file.write(f'    clock_rate: 1\n')
-                file.write(f'    pre_copy: "$SIMULATOR_ROOT/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"\n')
+                file.write(f'    pre_copy: "$SIMULATOR_ROOT/dependencies/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"\n')
         
         # 第二组GPU芯粒 (0,5)-(4,9)
         for i in range(5):
@@ -29,11 +29,11 @@ def generate_yaml_file():
                 file.write(f'    log: "gpgpusim.{i}.{j}.log"\n')
                 file.write(f'    is_to_stdout: false\n')
                 file.write(f'    clock_rate: 1\n')
-                file.write(f'    pre_copy: "$SIMULATOR_ROOT/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"\n')
+                file.write(f'    pre_copy: "$SIMULATOR_ROOT/dependencies/gpgpu-sim/configs/tested-cfgs/SM2_GTX480/*"\n')
 
         # Sniper处理器
         file.write(f"  # Process 50\n")
-        file.write(f'  - cmd: "$SIMULATOR_ROOT/snipersim/run-sniper"\n')
+        file.write(f'  - cmd: "$SIMULATOR_ROOT/dependencies/snipersim/run-sniper"\n')
         file.write(f'    args: ["--", "$BENCHMARK_ROOT/bin/mlp_c", "9", "9"]\n')
         file.write(f'    log: "sniper.9.9.log"\n')
         file.write(f'    is_to_stdout: false\n')
@@ -59,7 +59,7 @@ def generate_yaml_file():
         file.write("# Phase 2 configuration.\n")
         file.write("phase2:\n")
         file.write("  # Process 0\n")
-        file.write('  - cmd: "$SIMULATOR_ROOT/popnet_chiplet/build/popnet"\n')
+        file.write('  - cmd: "$SIMULATOR_ROOT/dependencies/popnet_chiplet/build/popnet"\n')
         file.write('    args: ["-A", "100", "-c", "1", "-V", "3", "-B", "12", "-O", "12", "-F", "2", "-L", "1000", "-T", "1000000000", "-r", "1", "-I", "../bench.txt", "-G", "test/mesh_6_6.gv", "-D", "../delayInfo.txt", "-P"]\n')
         file.write('    log: "popnet_0.log"\n')
         file.write('    is_to_stdout: false\n')

@@ -15,10 +15,10 @@ message(STATUS "BENCHMARK_ROOT = ${BENCHMARK_ROOT}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -g")
 # 添加包含目录
 include_directories(${SIMULATOR_ROOT}/interchiplet/includes)
-include_directories(${SIMULATOR_ROOT}/snipersim/include)
+include_directories(${SIMULATOR_ROOT}/dependencies/snipersim/include)
 # 设置C++库路径
 set(INTERCHIPLET_C_LIB "${SIMULATOR_ROOT}/interchiplet/lib/libinterchiplet_c.a")
-set(SNIPERSIM_LIB "${SIMULATOR_ROOT}/snipersim/lib/libcarbon_sim.a")
+set(SNIPERSIM_LIB "${SIMULATOR_ROOT}/dependencies/snipersim/lib/libcarbon_sim.a")
 
 # 设置输出目录 - 匹配makefile中的结构
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -46,7 +46,7 @@ add_custom_command(
 add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/bin/dlrm_cu
     DEPENDS ${CMAKE_BINARY_DIR}/cuobj/dlrm_cu.o
-    COMMAND nvcc -L${SIMULATOR_ROOT}/gpgpu-sim/lib/$ENV{GPGPUSIM_CONFIG} --cudart shared ${CMAKE_BINARY_DIR}/cuobj/dlrm_cu.o -o ${CMAKE_BINARY_DIR}/bin/dlrm_cu
+    COMMAND nvcc -L${SIMULATOR_ROOT}/dependencies/gpgpu-sim/lib/$ENV{GPGPUSIM_CONFIG} --cudart shared ${CMAKE_BINARY_DIR}/cuobj/dlrm_cu.o -o ${CMAKE_BINARY_DIR}/bin/dlrm_cu
     COMMENT "Linking CUDA executable"
 )
 
