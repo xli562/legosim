@@ -15,11 +15,13 @@ benchmark/**/bin/
 
 # Workspace configuration
 .vscode
+.env
 CLAUDE.md
 TODO.md
 
 # Experiment outputs
 run_outputs
+logs
 
 *.pdf
 *.o
