@@ -1,4 +1,6 @@
 #include <vector>
+#include <thread>
+#include <future>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -124,10 +126,13 @@ void sendBlock(
 }
 
 // @brief Receives the tiles and re-assembles the full matrix C
-// @param asicId (int) Id of the ASIC instance
-// @param matC   (vector<element_t>&, output) The full matrix C
+// @param asicId        (int) Id of the ASIC instance
+// @param messageBuffer (vector<uint8_t>&) Pre-allocated buffer of size
+//                      sizeof(MsgHeader) + C tile payload bytes
+// @param matC          (vector<element_t>&, output) The full matrix C
 int receiveTile(
     int asicId,
+    std::vector<uint8_t>& messageBuffer,
     std::vector<gemm2DMesh::element_t>& matC
 ) {
     using namespace gemm2DMesh;
@@ -135,9 +140,6 @@ int receiveTile(
     using std::cerr;
     using std::endl;
 
-    std::vector<uint8_t> messageBuffer;
-    messageBuffer.resize(sizeof(MsgHeader)
-                         + getExpectedPayloadByteCnt(Opcode::C_TILE));
     receiveMessage(
         srcNode.x, srcNode.y,
         ASIC_SLOTS[asicId].x, ASIC_SLOTS[asicId].y,
@@ -206,19 +208,37 @@ int main() {
     for (int i = 0; i < K*N; ++i) matB[i] = matPrng(i, N, RNG_P1, RNG_P2, SEED_B);
 
     //========================================================================
+    // Create one receiver thread per ASIC up front. Each sleeps until main
+    // signals that its ASIC has both inputs, then blocks until the C tile
+    // arrives. A receive issued before the ASIC has its inputs would
+    // deadlock the coordinator. Tiles cover disjoint regions of matC, so no
+    // lock is needed.
+    //========================================================================
+    vector<int> retcodes(ASIC_CNT, 0);
+    vector<std::promise<void>> inputsSent(ASIC_CNT);
+    vector<std::thread> receivers;
+    for (int asicId = 0; asicId < ASIC_CNT; ++asicId) {
+        receivers.emplace_back([asicId, &matC, &retcodes, &inputsSent]() {
+            // Allocate before sleeping so the receive is issued on wake-up
+            vector<uint8_t> messageBuffer(
+                sizeof(MsgHeader) + getExpectedPayloadByteCnt(Opcode::C_TILE));
+            inputsSent[asicId].get_future().wait();
+            retcodes[asicId] = receiveTile(asicId, messageBuffer, matC);
+        });
+    }
+
+    //========================================================================
     // Send A and B blocks
     //========================================================================
     for (int asicId = 0; asicId < ASIC_CNT; ++asicId) {
         for (Opcode opcode : {A_BLOCK, B_BLOCK}) {
             sendBlock(asicId, opcode, matA, matB);
         }
+        inputsSent[asicId].set_value();
     }
 
-    //========================================================================
-    // Receive C tiles
-    //========================================================================
-    for (int asicId = 0; asicId < ASIC_CNT; ++asicId) {
-        int retcode = receiveTile(asicId, matC);
+    for (std::thread& receiver : receivers) receiver.join();
+    for (int retcode : retcodes) {
         if (retcode != 0) return 1;
     }
 

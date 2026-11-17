@@ -20,7 +20,7 @@ $(ASIC_TARGET): obj/asic.o
 
 # CPU program run under Sniper: needs the syscall API library.
 $(CPU_TARGET): obj/cpu.o
-	$(CC) $< $(INTERCHIPLET_C_LIB) -o $@
+	$(CC) $< $(INTERCHIPLET_C_LIB) -o $@ -pthread
 
 # Rule for C object
 obj/%.o: %.cpp comms_protocol.h
