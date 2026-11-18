@@ -1,5 +1,5 @@
 # Provides logger for other modules.
-
+import bdb
 import sys
 import os
 from loguru._handler import Message
@@ -61,6 +61,14 @@ def get_logger():
     return _logger
 
 logger = get_logger()
+
+def _log_uncaught(exc_type, exc, tb):
+    if issubclass(exc_type, (KeyboardInterrupt, bdb.BdbQuit)):
+        # Keep Ctrl+C and quitting pdb quiet
+        sys.__excepthook__(exc_type, exc, tb)
+        return
+    logger.opt(exception=(exc_type, exc, tb)).critical('Uncaught exception')
+sys.excepthook = _log_uncaught
 
 def log_data(data):
     logger.log('DATA', str(data))

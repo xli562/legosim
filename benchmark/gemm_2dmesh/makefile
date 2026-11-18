@@ -23,7 +23,7 @@ $(CPU_TARGET): obj/cpu.o
 	$(CC) $< $(INTERCHIPLET_C_LIB) -o $@ -pthread
 
 # Rule for C object
-obj/%.o: %.cpp comms_protocol.h
+obj/%.o: src/%.cpp src/comms_protocol.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Directory for binary files.

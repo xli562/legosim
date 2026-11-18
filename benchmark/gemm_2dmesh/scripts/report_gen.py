@@ -33,7 +33,7 @@ CPU_NODE = CPU_SLOT[0] + MESH_X_DIM * CPU_SLOT[1]
 CPU_PROC_IDX = 0    # Position of the CPU in the YAML's phase1 list
 TOPOLOGY_FILENAME = '2dmesh.gv'
 REPORT_FILENAME = 'report.json'
-LINK_JSON_PATH = Path(__file__).parent / 'link_characteristics.json'
+LINK_JSON_PATH = Path(__file__).parent.parent / 'link_characteristics.json'
 
 
 def matPrng(pos:int, colCnt:int, p1:int, p2:int, seed:int) -> int:

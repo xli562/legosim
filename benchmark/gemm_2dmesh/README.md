@@ -24,8 +24,8 @@ From the repo root, on the host:
 ```bash
 bash benchmark/gemm_2dmesh/run.sh      # ~3 min; prints run_outputs/gemm_2dmesh.XXXXXX
 conda activate lego
-python benchmark/gemm_2dmesh/report_gen.py  run_outputs/gemm_2dmesh.XXXXXX
-python benchmark/gemm_2dmesh/plot_report.py run_outputs/gemm_2dmesh.XXXXXX
+python benchmark/gemm_2dmesh/scripts/report_gen.py  run_outputs/gemm_2dmesh.XXXXXX
+python benchmark/gemm_2dmesh/scripts/plot_report.py run_outputs/gemm_2dmesh.XXXXXX
 ```
 
 This leaves `report.json` and `figures/*.png` in the run directory.
@@ -59,7 +59,7 @@ and wait per ASIC), `power.png` (static vs dynamic), `area.png` (by component).
 | ASIC latency (cycles) | `gemm_2dmesh.yml`: 2nd argument of all 8 `bin/asic` entries | Yes |
 | Link delay (cycles/hop) | `topology/2dmesh.gv`: `edge [weight=…]` | Yes |
 | Flit width (bits per link per cycle) | Five places, see below | Yes |
-| Matrix sizes `M`, `K`, `N` | `comms_protocol.h` **and** the copies at the top of `report_gen.py` | Yes |
+| Matrix sizes `M`, `K`, `N` | `src/comms_protocol.h` **and** the copies at the top of `report_gen.py` | Yes |
 | CPU cores | `gemm_2dmesh.yml`: `-n` in the `run-sniper` args | Yes |
 | Link/router energy, power, area | `link_characteristics.json` | No, re-run the two Python scripts |
 
@@ -69,7 +69,7 @@ and wait per ASIC), `power.png` (static vs dynamic), `area.png` (by component).
 |---|---|
 | `run.sh` | `-f f` |
 | `gemm_2dmesh.yml` | Popnet `-F f` |
-| `comms_protocol.h` | `FLIT_SIZE = 8·f` (bytes) |
+| `src/comms_protocol.h` | `FLIT_SIZE = 8·f` (bytes) |
 | `report_gen.py` | `FLIT_BITS = 64·f` |
 | `link_characteristics.json` | `flit_bits = 64·f` |
 
@@ -83,7 +83,7 @@ Other limits:
   have 8 tiles. The build fails otherwise.
 - Hop counts in `report_gen.py` assume this 3×3 mesh with the CPU at node 4. A
   different shape or CPU position needs code changes, not just a new `.gv`.
-- In `cpu.cpp`, a receive issued before its ASIC has both inputs deadlocks the
+- In `src/cpu.cpp`, a receive issued before its ASIC has both inputs deadlocks the
   simulation. Keep each receiver waiting for the main thread's signal.
 
 ## Sweeps
@@ -104,10 +104,10 @@ For each design point: edit, `run.sh`, then both Python scripts. Compare the
 
 | File | Role |
 |---|---|
-| `cpu.cpp`, `asic.cpp` | CPU program (Sniper) and ASIC model (native) |
-| `comms_protocol.h` | Sizes, tiling, ASIC placement, message header |
+| `src/cpu.cpp`, `src/asic.cpp` | CPU program (Sniper) and ASIC model (native) |
+| `src/comms_protocol.h` | Sizes, tiling, ASIC placement, message header |
 | `gemm_2dmesh.yml` | Processes to launch, and Popnet arguments |
 | `topology/2dmesh.gv` | Mesh graph and link delay |
 | `link_characteristics.json` | Link and router costs, from `run_outputs/dsent_link_costs/mesh_link_assumptions_dsent.json`. Router values are illustrative. |
 | `asic_characteristics.json` | Empty: ASIC energy and area are not modelled |
-| `run.sh`, `report_gen.py`, `plot_report.py` | Simulate, report, plot |
+| `run.sh`, `scripts/report_gen.py`, `scripts/plot_report.py` | Simulate, report, plot |

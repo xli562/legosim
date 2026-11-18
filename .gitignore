@@ -6,9 +6,21 @@
 ![Mm]ake[Ff]ile
 ![Dd]ocker[Ff]ile
 
-# Compiled binaries (makefiles build into bin/)
-benchmark/**/bin/
+# Build and run artifacts
+benchmark/**/bin
+benchmark/**/obj
+benchmark/**/cfg
+interchiplet/bin
+interchiplet/lib
+interchiplet/build
+benchmark/matmul_test/proc_r*
+benchmark/matmul_test/bench.txt
+benchmark/matmul_test/delayInfo.txt
+benchmark/matmul_test/pacCountInfo.txt
+benchmark/matmul_test/buffer*
+benchmark/matmul_test/*.log
 *.out
+*.o
 *.so
 *.a
 **pycache**
@@ -16,28 +28,15 @@ benchmark/**/bin/
 # Workspace configuration
 .vscode
 .env
-CLAUDE.md
+*CLAUDE*
 TODO.md
 
-# Experiment outputs
+# Experiment logs and data
 run_outputs
 logs
 
 *.pdf
-*.o
 
 # Scratch directory
 scratch
 
-interchiplet/bin
-interchiplet/lib
-interchiplet/build
-
-gpgpu-sim_distribution_backup
-
-benchmark/matmul_test/proc_r*
-benchmark/matmul_test/bench.txt
-benchmark/matmul_test/delayInfo.txt
-benchmark/matmul_test/pacCountInfo.txt
-benchmark/matmul_test/buffer*
-benchmark/matmul_test/*.log
