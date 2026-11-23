@@ -47,7 +47,7 @@ namespace gemm2DMesh {
     struct Mesh2DCoord {int x; int y;};
     static constexpr Mesh2DCoord ASIC_SLOTS[] = {
         {0,0}, {0,1}, {0,2},
-        {1,0},        {1,2},
+        {1,0}       , {1,2},
         {2,0}, {2,1}, {2,2}
     };
     static constexpr Mesh2DCoord CPU_SLOTS[] = {

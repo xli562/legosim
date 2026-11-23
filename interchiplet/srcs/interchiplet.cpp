@@ -362,7 +362,7 @@ InterChiplet::InnerTimeType __loop_phase_one(
         pthread_join(proc_struct->m_thread_id, NULL);
         delete proc_struct;
     }
-    spdlog::info("All process has exit.");
+    spdlog::info("All processes have exited.");
 
     // Remove file.
     for (auto& pipe_name : g_sync_structure->m_pipe_struct.pipeSet()) {
@@ -409,7 +409,7 @@ void __loop_phase_two(int __round, const std::vector<ProcessConfig>& __proc_cfg_
         pthread_join(proc_struct->m_thread_id, NULL);
         delete proc_struct;
     }
-    spdlog::info("All process has exit.");
+    spdlog::info("All processes have exited.");
 
     // Destory global synchronize structure.
     delete g_sync_structure;

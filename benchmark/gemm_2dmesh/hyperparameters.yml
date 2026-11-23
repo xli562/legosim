@@ -4,11 +4,11 @@
 #   a model should be built.
 
 technology-node:
-  value: TG-11
-  supported-values:
-    - TG-11
-    - SOI-45
-  unit: value-is-text
+  electronic:
+    value: TG-11
+  photonic:
+    value: "0001"
+
 
 clock:
   cpu:
@@ -26,8 +26,8 @@ topology:
     value: [3, 3]
     unit: count
   flit-size:
-    value: 128
-    unit: bit
+    value: 16
+    unit: byte
   cpu-position:
     value: [1, 1]
     unit: count

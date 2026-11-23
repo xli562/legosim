@@ -1,90 +1,96 @@
-# Where `update_hyperparameters()` writes
+# Plan: mapping `hyperparameters.yml` to DSENT
 
-## Context
+## Goal
 
-Each hyperparameter is hard-coded in up to five files. This maps every key in
-`hyperparameters.yml` to its consumers. Paths are relative to
-`benchmark/gemm_2dmesh/`.
+[hyperparameters.yml](benchmark/gemm_2dmesh/hyperparameters.yml) is the unified interface for simulation parameters. `update_hyperparameters.py` must translate it into DSENT inputs for three models: the mesh router, the electronic link and the point-to-point photonic link.
 
-`cpu.cpp`, `asic.cpp` and `makefile` need no edits: they read everything from
-`comms_protocol.h` or command-line arguments.
+## How DSENT is driven
 
-## Fix first: the YAML does not parse
+DSENT is the gem5 copy at [dependencies/gem5/ext/dsent](dependencies/gem5/ext/dsent). It has no library API. It is a command-line tool that reads three plain-text inputs:
 
-In `supported_units`, prefix each `[name, scale]` pair with `- ` and delete the
-stray `[ ]`.
+```
+dsent -cfg link.cfg [-overwrite "Key1=val; Key2=val;"]
+```
 
-## Keys with a place to write
+1. **A `.cfg` file** of `Key = Value` lines:
+   - `ModelName` picks the component: `Router`, `RepeatedLink` (electronic link) or `SWSRLink` (photonic link).
+   - The other keys are that model's parameters, such as `NumberBits`.
+   - `EvaluateString` lists the results to print, for example `$(Energy>>SWSRLink:Send)` or `$(NddPower>>SWSRLink:Laser)`. `NddPower` is power that doesn't depend on traffic (idle power).
+2. **An electrical technology file** (`ElectricalTechModelFilename`): `Bulk45LVT`, `Bulk32LVT`, `Bulk22LVT` or `TG11LVT`.
+3. **A photonic technology file** (`PhotonicTechModelFilename`): [Photonics.model](dependencies/gem5/ext/dsent/tech/tech_models/Photonics.model), holding the device constants.
 
-| Key | Where |
+The `.cfg` and `-overwrite` can't change technology-file values. So each run needs a generated `.cfg` per model plus a patched copy of `Photonics.model`.
+
+DSENT outputs energy per event, idle power and area. It doesn't output latency in cycles: that comes from popnet.
+
+## Mapping from `hyperparameters.yml`
+
+| YAML key | DSENT target | Where | Notes |
+|---|---|---|---|
+| `technology-node` | `ElectricalTechModelFilename` | cfg | `TG-11` → `TG11LVT.model`. **`SOI-45` has no model**; the closest is `Bulk45LVT`. |
+| `clock.electrical-network` | `CoreDataRate` (SWSRLink), `Frequency` (Router) | cfg | Hz |
+| `topology.flit-size` | `NumberBits` (both links), `NumberBitsPerFlit` (Router) | cfg | |
+| `router.virtual-channel-count` | `NumberVirtualChannelsPerVirtualNetwork` | cfg | with `NumberVirtualNetworks = 1` |
+| `router.virtual-channel-depth` | `NumberBuffersPerVirtualChannel` | cfg | |
+| *(none)* | `NumberInputPorts` / `NumberOutputPorts` | cfg | 5 for a mesh router (4 directions + local) |
+| `electronic-link.latency` | `Delay` (RepeatedLink) | cfg | seconds = cycles / clock; a target used to size repeaters |
+| *(missing)* | `WireLength` (RepeatedLink), `Length` (SWSRLink) | cfg | metres; see open decision 1 |
+| `laser.wavelength-count` | `LinkDataRate` | cfg | bit/s, derived; see "Derived values and checks" |
+| `electronic-photonic-interface.ring-tuning-model` | `RingTuningMethod` | cfg | `full-thermal` → `FullThermal`, `bit-reshuffled` → `ThermalWithBitReshuffle`, `electrically-assisted` → `ElectricalAssistWithBitReshuffle` |
+| `electronic-photonic-interface.modulator-loss` / `modulator-extinction` | `InsertionLoss` / `ExtinctionRatio` | cfg | dB. Needs `OptimizeLoss = false`; when it is `true`, DSENT picks its own values ([OpticalGraph.cc:90](dependencies/gem5/ext/dsent/model/optical_graph/OpticalGraph.cc#L90)). |
+| `laser.efficiency` | `Laser->CW->Efficiency` | photonic tech file | |
+| `photonic-link.waveguide-loss` | `Waveguide->LossPerMeter` | photonic tech file | dB/cm × 100 |
+| `photonic-link.bit-error-rate` | `SenseAmp->BER` | photonic tech file | |
+| `electronic-photonic-interface.ring-drop-loss` / `ring-through-loss` | `Ring->DropLoss` / `Ring->ThroughLoss` | photonic tech file | dB |
+| `electronic-photonic-interface.ring-heating-efficiency` | `Ring->HeatingEfficiency` | photonic tech file | K/mW × 1000 = K/W |
+| `electronic-photonic-interface.photodetector-capacitance` | `Photodetector->Cap` | photonic tech file | fF × 1e-15 |
+| `photonic-link.coupler-loss` | `Coupler->Loss` | photonic tech file | **No effect**: no model reads this key. |
+
+Keys that don't go to DSENT:
+
+| YAML keys | Used by |
 |---|---|
-| `clock.clock_rate` | `link_characteristics.json`: `simulated_clock_hz`. Not the `clock_rate:` fields in `gemm_2dmesh.yml`; those are simulator ratios and stay 1. |
-| `topology.flit_size` | With `f = bits / 64`: `run.sh` `-f`; `gemm_2dmesh.yml` Popnet `-F`; `comms_protocol.h` `FLIT_SIZE` (bytes); `report_gen.py` `FLIT_BITS`; `link_characteristics.json` `flit_bits`. Only `f` = 1, 2, 4 work. |
-| `topology.mesh_dimension` | `comms_protocol.h` `MESH_X_DIM`, `MESH_Y_DIM`, `ASIC_SLOTS`; `topology/2dmesh.gv` edges; `gemm_2dmesh.yml` `bin/asic` entries, Sniper `-n`, Popnet `-A` (= X·Y); `run.sh` `-w` (= X); `report_gen.py` `MESH_X_DIM`, `MESH_Y_DIM`. |
-| `topology.cpu_position` | `comms_protocol.h` `CPU_SLOTS` and the gap in `ASIC_SLOTS`; `report_gen.py` `CPU_SLOT`. |
-| `workload.matrices_dimensions` | `comms_protocol.h` `M`, `K`, `N`; `report_gen.py` `M`, `K`, `N`. |
-| `router.area` | `link_characteristics.json`: `router.area_mm2_per_router`. |
-| `router.virtual_channel_count` | `gemm_2dmesh.yml` Popnet `-V`. |
-| `router.virtual_channel_depth` | `gemm_2dmesh.yml` Popnet `-B`. |
-| `router.head_latency` | `topology/2dmesh.gv`: `node [pipeline_stage_delay=…]`. |
-| `electronic_link.latency` / `photonic_link.latency` | `topology/2dmesh.gv`: `edge [weight=…]`. Only one can apply. |
-| `laser.wavelength_count` | `link_characteristics.json`: `optical.wavelengths_per_direction`. Nothing reads it. |
-| `photonic_link.capacity_per_wavelength` | `link_characteristics.json`: `optical.bit_rate_per_wavelength_bps`. Nothing reads it. |
+| `router.head-latency`, `router.body-latency`, `photonic-link.latency` | popnet only |
+| `electronic-link.capacity`, `photonic-link.capacity-per-wavelength` | capacity checks (below) |
+| `router.area` | nothing; see open decision 2 |
+| `memory-block`, `asic`, `clock.cpu`, `clock.asic`, `workload`, `topology.mesh-dimension`, `topology.cpu-position` | out of DSENT's scope |
 
-## Keys to validate, not write
+## Derived values and checks
 
-Popnet moves one flit per link per cycle, so link capacity must equal
-`flit_size × clock_rate`.
+Every link, electronic or photonic, carries one flit per clock cycle (popnet assumes the same). DSENT doesn't take a wavelength count: it computes `NumberBits × CoreDataRate / LinkDataRate`, rounded down ([SWSRLink.cc:81](dependencies/gem5/ext/dsent/model/optical/SWSRLink.cc#L81)). So `wavelength-count` is the input and the per-wavelength rate is derived from it.
 
-| Key | Current values |
-|---|---|
-| `electronic_link.capacity` | 128 bit × 2 GHz = 256 Gb/s. Consistent. |
-| `photonic_link.capacity_per_wavelength × laser.wavelength_count` | 4 × 32 = 128 Gb/s, which means 64-bit flits. **Conflicts with `flit_size: 128`.** |
+The two capacity keys are physical upper limits. The simulator checks the achieved rates against them and flags a violation.
 
-## Keys nothing reads yet
+```python
+required_link_rate = flit_size * clock_hz                    # bit/s, e.g. 25.6e9
+rate_per_wavelength = required_link_rate / wavelength_count  # e.g. 6.4e9 → DSENT LinkDataRate
 
-Each needs a model before the function can do more than record it.
+if required_link_rate > electronic_capacity:
+    # flag: electronic link over capacity
+if rate_per_wavelength > capacity_per_wavelength:
+    # flag: photonic wavelength over capacity
+```
 
-| Key | What is missing |
-|---|---|
-| `technology_node`, `laser.efficiency`, `photonic_link.{coupler_loss, waveguide_loss, bit_error_rate}`, `electronic_photonic_interface.*` | A DSENT run or link-budget model that produces the three `optical.*` energy, power and area values in `link_characteristics.json`. |
-| `asic.area` | A field in `asic_characteristics.json` (empty) and a term in `report_gen.py` `calc_area`. |
-| `memory_block.*` | A memory model in `asic.cpp` and an energy term in `report_gen.py`. |
-| `router.body_latency` | The `.gv` has one delay per router. |
+With the current values, 25.6 Gb/s < 256 Gb/s and 6.4 Gb/s < 32 Gb/s, so both checks pass.
 
-## Missing from the YAML
+Two things to watch:
 
-- ASIC compute latency: 2nd argument of each `bin/asic` entry in
-  `gemm_2dmesh.yml` (now `1820`).
-- `ROW_BLK_CNT`, `COL_BLK_CNT` in `comms_protocol.h`. Their product must equal
-  X·Y − 1, or a new mesh size fails to compile.
-- Popnet `-O` (output buffer size).
+1. **Units.** The YAML stores MHz and Gb/s. Convert to Hz and bit/s before computing or comparing.
+2. **Rounding.** A floating-point `LinkDataRate` can make DSENT's division give `3.9999…`, which it rounds down to 3 wavelengths. Write it as `int(round(rate_per_wavelength))`.
 
-## Decisions for you
+## Open decisions
 
-1. **Link type.** Add a key that selects electronic or photonic. It picks the edge
-   weight and the capacity check.
-2. **`photonic_link.latency: 0`.** Gives `weight=0`. Untested in Popnet; try it on
-   a throwaway run.
-3. **`report_gen.py`.** Have it read `hyperparameters.yml` instead of rewriting
-   its constants. Its `hop_count` and `mesh_cuts` assume a 3×3 mesh with the CPU
-   at node 4.
-4. **`run.sh`.** Also copy `hyperparameters.yml` and `link_characteristics.json`
-   into the run directory.
+1. **Link lengths.** Both link models need a length, and the YAML has none. Either add `electronic-link.length` and `photonic-link.length`, or derive the length from `asic.area` and the mesh pitch.
+2. **`router.area`.** DSENT computes router area itself from `flit-size`, the VC count and depth, the port count and `technology-node` (it sums standard-cell areas, so it underestimates the real area). Either remove the key, or keep it as a value to check DSENT's result against.
+3. **Capacity violations.** Raise an error and stop, or log a warning and continue. A warning allows exploring over-limit designs on purpose.
+4. **`SOI-45`.** Map it to `Bulk45LVT`, or remove it from `supported-values`.
+5. **`photonic-link.coupler-loss`.** It has no effect in DSENT. Either remove it, or add it to the loss budget some other way.
 
-Unverified: that `pipeline_stage_delay` delays only head flits. I read the call
-sites in Popnet's `sim_router.cc`, not the whole pipeline.
+## Implementation steps
 
-## Order
-
-1. Fix the YAML; write the loader and unit conversion.
-2. Scalars: `M`/`K`/`N`, flit size, clock, router area, `-V`, `-B`, edge weight.
-3. Validation: capacity, divisibility, `f`, tile count.
-4. Mesh size and CPU position.
-
-## Verification
-
-- With current values, `git diff` is empty after running the function.
-- Change one key; `git diff` touches only the files in its row.
-- `run.sh`, then `report_gen.py`: it refuses on a wrong `matC.bin` or a
-  `flit_bits` mismatch.
+1. Settle the open decisions and update `hyperparameters.yml`.
+2. In `update_hyperparameters.py`, compute the derived values and run the capacity checks.
+3. Generate the three `.cfg` files (`Router`, `RepeatedLink`, `SWSRLink`) from the mapping table.
+4. Generate the patched copy of `Photonics.model`.
+5. Run DSENT on each `.cfg` and parse the energy, idle power and area results.
+6. Combine DSENT's per-flit energies with popnet's flit counts.
