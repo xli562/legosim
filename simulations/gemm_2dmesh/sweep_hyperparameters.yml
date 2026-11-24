@@ -1,18 +1,18 @@
-clock:
-  cpu:
-    - value: 500
-      unit: MHz
-    - value: 2000
-      unit: MHz
+# clock:
+#   cpu:
+#     - value: 500
+#       unit: MHz
+#     - value: 2000
+#       unit: MHz
 
-topology:
-  flit-size:
-    - value: 8
-      unit: byte
-    - value: 16
-      unit: byte
-    - value: 32
-      unit: byte
+# topology:
+#   flit-size:
+#     - value: 8
+#       unit: byte
+#     - value: 16
+#       unit: byte
+#     - value: 32
+#       unit: byte
 
 # clock:
 #   cpu:

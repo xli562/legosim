@@ -4,6 +4,7 @@ import subprocess
 from itertools import product
 from copy import deepcopy
 from pathlib import Path
+from typing import Generator
 import yaml
 from dotenv import load_dotenv
 load_dotenv()
@@ -20,13 +21,16 @@ TEMPLATES_DIR = SIMULATION_ROOT / 'scripts/resource'
 DEFAULT_HPS_PATH = SIMULATION_ROOT / 'hyperparameters.yml'
 SWEEP_HPS_PATH = SIMULATION_ROOT / 'sweep_hyperparameters.yml'
 
-def gen_sweep_hps(sweep_params):
+def gen_sweep_hps(sweep_params) -> Generator[dict]:
     """ Generator of hyperparameter sets for the sweep
     
     Note
     --------
     Written with LLM, not checked
     """
+    if not sweep_params:
+        yield {}
+        return
     def flatten(d, path=()):
         for key, value in d.items():
             if isinstance(value, dict):
@@ -50,6 +54,8 @@ def merge_hps(default, override):
     --------
     Written with LLM, not checked
     """
+    if not override:
+        return default
     result = deepcopy(default)
     for key, value in override.items():
         if (
