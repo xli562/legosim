@@ -1,4 +1,4 @@
-BENCHMARK_ROOT = $(SIMULATOR_ROOT)/benchmark/gemm_2dmesh
+BENCHMARK_ROOT = $(SIMULATOR_ROOT)/simulations/gemm_2dmesh
 
 # Compiler environment
 CC = g++

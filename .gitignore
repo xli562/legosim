@@ -7,18 +7,12 @@
 ![Dd]ocker[Ff]ile
 
 # Build and run artifacts
-benchmark/**/bin
-benchmark/**/obj
-benchmark/**/cfg
+simulations/**/bin
+simulations/**/obj
+simulations/**/cfg
 dependencies/interchiplet/bin
 dependencies/interchiplet/lib
 dependencies/interchiplet/build
-benchmark/matmul_test/proc_r*
-benchmark/matmul_test/bench.txt
-benchmark/matmul_test/delayInfo.txt
-benchmark/matmul_test/pacCountInfo.txt
-benchmark/matmul_test/buffer*
-benchmark/matmul_test/*.log
 *.out
 *.o
 *.so
@@ -33,11 +27,10 @@ benchmark/matmul_test/*.log
 TODO.md
 
 # Experiment logs and data
-run_outputs
+simulations/**/sim_output
 logs
 
 *.pdf
 
 # Scratch directory
 scratch
-

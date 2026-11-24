@@ -16,7 +16,7 @@ from models import ASIC
 from math_utils import factor_pairs
 from file_utils import replace_cpp_vars, Mesh2DGraph, RunScriptBuilder
 
-SIMULATION_RDIR = Path('benchmark/gemm_2dmesh')
+SIMULATION_RDIR = Path('simulations/gemm_2dmesh')
 SIMULATION_ROOT = PROJECT_ROOT / SIMULATION_RDIR
 DOCKER_SIMULATION_ROOT = DOCKER_PROJECT_ROOT / SIMULATION_RDIR
 CONFIG_DIR = SIMULATION_ROOT / 'cfg'

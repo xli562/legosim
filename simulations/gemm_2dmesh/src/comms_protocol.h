@@ -63,7 +63,7 @@ namespace gemm2DMesh {
                   "Cannot split matrix B's columns into COL_BLK_CNT blocks");
 
     // Message format
-    static constexpr int FLIT_SIZE = 32;    // Unit: byte
+    static constexpr int FLIT_SIZE = 8;    // Unit: byte
     enum class Opcode: uint32_t {A_BLOCK, B_BLOCK, C_TILE};
     inline std::string opcodeName(Opcode opcode) {return
         (opcode == Opcode::A_BLOCK) ? "A_BLOCK"

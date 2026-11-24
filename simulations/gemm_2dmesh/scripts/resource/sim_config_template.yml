@@ -1,10 +1,10 @@
 phase1:
   - cmd: "$SIMULATOR_ROOT/dependencies/snipersim/run-sniper"
-    args: ["--", "$SIMULATOR_ROOT/benchmark/gemm_2dmesh/bin/cpu"]
+    args: ["--", "$SIMULATOR_ROOT/simulations/gemm_2dmesh/bin/cpu"]
     log: "cpu.log"
     is_to_stdout: false
     clock_rate: 0
-  - cmd: "$SIMULATOR_ROOT/benchmark/gemm_2dmesh/bin/asic"
+  - cmd: "$SIMULATOR_ROOT/simulations/gemm_2dmesh/bin/asic"
     args: []
     log: ""
     is_to_stdout: false
@@ -13,7 +13,7 @@ phase1:
 phase2:
   - cmd: "$SIMULATOR_ROOT/dependencies/popnet_chiplet/build/popnet"
     args: ["-c", "1", "-R", "4",
-           "-G", "$SIMULATOR_ROOT/benchmark/gemm_2dmesh/cfg/2dmesh.gv",
+           "-G", "$SIMULATOR_ROOT/simulations/gemm_2dmesh/cfg/2dmesh.gv",
            "-I", "../bench.txt", "-D", "../delayInfo.txt",
            "-O", "12", "-L", "1000",
            "-T", "1000000000", "-r", "1", "-P"]

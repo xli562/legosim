@@ -10,7 +10,7 @@ sys.path.insert(0, str(PROJECT_ROOT / PYUTILS_RDIR))
 from xlogging import logger
 from update_hyperparameters import HyperparameterUpdater, RUN_SCRIPT_PATH
 
-SIMULATION_ROOT = PROJECT_ROOT / 'benchmark/gemm_2dmesh'
+SIMULATION_ROOT = PROJECT_ROOT / 'simulations/gemm_2dmesh'
 HYPERPARAMS_PATH = SIMULATION_ROOT / 'hyperparameters.yml'
 TEMPLATES_DIR = SIMULATION_ROOT / 'scripts/resource'
 

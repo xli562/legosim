@@ -48,7 +48,7 @@ phase1:
 phase2:
   - cmd: "$SIMULATOR_ROOT/dependencies/popnet_chiplet/build/popnet"
     args: ["-A", "9", "-c", "1", "-R", "4",
-           "-G", "$SIMULATOR_ROOT/benchmark/gemm_2dmesh/topology/2dmesh.gv",
+           "-G", "$SIMULATOR_ROOT/simulations/gemm_2dmesh/cfg/2dmesh.gv",
            "-F", "2", "-I", "../bench.txt", "-D", "../delayInfo.txt",
            "-V", "3", "-B", "12", "-O", "12", "-L", "1000",
            "-T", "1000000000", "-r", "1", "-P"]

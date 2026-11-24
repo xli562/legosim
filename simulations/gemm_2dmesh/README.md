@@ -22,10 +22,10 @@ root that defines `PROJECT_ROOT` and `PYUTILS_RDIR`.
 From the repo root, on the host:
 
 ```bash
-bash benchmark/gemm_2dmesh/run.sh      # ~3 min; prints run_outputs/gemm_2dmesh.XXXXXX
+bash simulations/gemm_2dmesh/cfg/run.sh      # ~3 min; prints run_outputs/gemm_2dmesh.XXXXXX
 conda activate lego
-python benchmark/gemm_2dmesh/scripts/report_gen.py  run_outputs/gemm_2dmesh.XXXXXX
-python benchmark/gemm_2dmesh/scripts/plot_report.py run_outputs/gemm_2dmesh.XXXXXX
+python simulations/gemm_2dmesh/scripts/report_gen.py  run_outputs/gemm_2dmesh.XXXXXX
+python simulations/gemm_2dmesh/scripts/plot_report.py run_outputs/gemm_2dmesh.XXXXXX
 ```
 
 This leaves `report.json` and `figures/*.png` in the run directory.
@@ -57,7 +57,7 @@ and wait per ASIC), `power.png` (static vs dynamic), `area.png` (by component).
 | Parameter | Edit | New simulation? |
 |---|---|---|
 | ASIC latency (cycles) | `gemm_2dmesh.yml`: 2nd argument of all 8 `bin/asic` entries | Yes |
-| Link delay (cycles/hop) | `topology/2dmesh.gv`: `edge [weight=…]` | Yes |
+| Link delay (cycles/hop) | `cfg/2dmesh.gv`: `edge [weight=…]` | Yes |
 | Flit width (bits per link per cycle) | Five places, see below | Yes |
 | Matrix sizes `M`, `K`, `N` | `src/comms_protocol.h` **and** the copies at the top of `report_gen.py` | Yes |
 | CPU cores | `gemm_2dmesh.yml`: `-n` in the `run-sniper` args | Yes |
@@ -67,7 +67,7 @@ and wait per ASIC), `power.png` (static vs dynamic), `area.png` (by component).
 
 | File | Setting |
 |---|---|
-| `run.sh` | `-f f` |
+| `cfg/run.sh` | `-f f` |
 | `gemm_2dmesh.yml` | Popnet `-F f` |
 | `src/comms_protocol.h` | `FLIT_SIZE = 8·f` (bytes) |
 | `report_gen.py` | `FLIT_BITS = 64·f` |
@@ -107,7 +107,7 @@ For each design point: edit, `run.sh`, then both Python scripts. Compare the
 | `src/cpu.cpp`, `src/asic.cpp` | CPU program (Sniper) and ASIC model (native) |
 | `src/comms_protocol.h` | Sizes, tiling, ASIC placement, message header |
 | `gemm_2dmesh.yml` | Processes to launch, and Popnet arguments |
-| `topology/2dmesh.gv` | Mesh graph and link delay |
+| `cfg/2dmesh.gv` | Mesh graph and link delay |
 | `link_characteristics.json` | Link and router costs, from `run_outputs/dsent_link_costs/mesh_link_assumptions_dsent.json`. Router values are illustrative. |
 | `asic_characteristics.json` | Empty: ASIC energy and area are not modelled |
-| `run.sh`, `scripts/report_gen.py`, `scripts/plot_report.py` | Simulate, report, plot |
+| `cfg/run.sh`, `scripts/report_gen.py`, `scripts/plot_report.py` | Simulate, report, plot |

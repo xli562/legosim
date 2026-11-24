@@ -13,9 +13,9 @@ source scripts/setup_env.sh
 
 make -C "<SIMULATION_ROOT>"
 
-mkdir -p run_outputs
+mkdir -p "<SIMULATION_ROOT>/sim_output"
 timestamp=$(date +%y-%m-%d_%H-%M-%S)
-run_dir=$(mktemp -d "/workspace/sim/run_outputs/${timestamp}_gemm_2dmesh.XXX")
+run_dir=$(mktemp -d "<SIMULATION_ROOT>/sim_output/${timestamp}.XXX")
 chmod 755 "$run_dir"
 
 cp <SIM_CONFIG_YAML_PATH> "$run_dir/input.sim_config.yml"
