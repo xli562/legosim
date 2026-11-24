@@ -9,7 +9,6 @@ technology-node:
   photonic:
     value: "0001"
 
-
 clock:
   cpu:
     value: 2000

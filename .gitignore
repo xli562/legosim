@@ -29,6 +29,7 @@ benchmark/matmul_test/*.log
 .vscode
 .env
 *CLAUDE*
+*AGENTS*
 TODO.md
 
 # Experiment logs and data

@@ -15,7 +15,7 @@ phase2:
     args: ["-c", "1", "-R", "4",
            "-G", "$SIMULATOR_ROOT/benchmark/gemm_2dmesh/cfg/2dmesh.gv",
            "-I", "../bench.txt", "-D", "../delayInfo.txt",
-           "-V", "3", "-B", "12", "-O", "12", "-L", "1000",
+           "-O", "12", "-L", "1000",
            "-T", "1000000000", "-r", "1", "-P"]
     log: "popnet.log"
     is_to_stdout: false

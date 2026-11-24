@@ -32,11 +32,35 @@ COMMS_PROTOCOL_H_PATH = SIMULATION_ROOT / 'src/comms_protocol.h'
 PINT_UNITS_PATH = PROJECT_ROOT / 'dependencies/pyutils/resource/pint_units.txt'
 ureg = UnitRegistry(PINT_UNITS_PATH)
 
+def _chiplet_layout(mesh_x_dim, mesh_y_dim, cpu_pos) -> tuple[str,str]:
+        """ Returns chiplet layout based on mesh dimension and cpu position
+
+        :return asic_layout: 
+        :return cpu_layout:
+        
+        Note
+        --------
+        Written with LLM, not checked
+        """
+        cpu_pos = tuple(cpu_pos)
+        rows = []
+        for x in range(mesh_x_dim):
+            coords = [
+                f"{{{x},{y}}}"
+                for y in range(mesh_y_dim)
+                if (x, y) != cpu_pos
+            ]
+            if coords:
+                rows.append("    " + ", ".join(coords))
+        asic_layout = "{\n" + ",\n".join(rows) + "\n}"
+        cpu_layout = f"{{\n    {{{cpu_pos[0]},{cpu_pos[1]}}}\n}}"
+        return asic_layout, cpu_layout
+
 class HyperparameterUpdater:
     SIM_CONFIG_TEMPLATE_FNAME = 'sim_config_template.yml'
     RUN_SCRIPT_TEMPLATE_FNAME = 'run_template.sh'
 
-    def __init__(self, hyperparams_path:Path, templates_dir:Path):
+    def __init__(self, hyperparams:Path|dict, templates_dir:Path):
         # Input processing
         required_templates = {self.SIM_CONFIG_TEMPLATE_FNAME,
                               self.RUN_SCRIPT_TEMPLATE_FNAME}
@@ -47,8 +71,15 @@ class HyperparameterUpdater:
                                     f'in {templates_dir}: '
                                     f'{', '.join(sorted(missing_templates))}')
 
-        with open(hyperparams_path, 'r', encoding='utf-8') as f:
-            self.hp:dict = yaml.safe_load(f)
+        if isinstance(hyperparams, Path):
+            with open(hyperparams, 'r', encoding='utf-8') as f:
+                self.hp:dict = yaml.safe_load(f)
+        elif isinstance(hyperparams, dict):
+            self.hp = hyperparams
+        else:
+            raise ValueError('hyperparams must be either a dictionary'
+                             'or a path to a YAML file. '
+                             f'Got {hyperparams}')
         self._init_asic()
         self._init_sim_config(templates_dir)
         self.graph = Mesh2DGraph()
@@ -130,39 +161,6 @@ class HyperparameterUpdater:
         for asic_id in range(self._asic_cnt):
             self.sim_config['phase1'][asic_id+1]['clock_rate'] = asic_clk_rate
 
-    def _chiplet_layout(self) -> tuple[str,str]:
-        """ Returns chiplet layout based on mesh dimension and cpu position
-
-        :return asic_layout: 
-        :return cpu_layout:
-        
-        Note
-        --------
-        Written with LLM, not checked
-        """
-        mesh_x_dim, mesh_y_dim = self._mesh_xy_dim
-        cpu_pos = tuple(self.hp['topology']['cpu-position']['value'])
-        rows = []
-        for x in range(mesh_x_dim):
-            coords = []
-            for y in range(mesh_y_dim):
-                if (x, y) == cpu_pos:
-                    coords.append(None)
-                else:
-                    coords.append(f"{{{x},{y}}}")
-            row = "    "
-            for y, coord in enumerate(coords):
-                if coord is None:
-                    row += " " * (len(f"{{{x},{y}}}") + 2)
-                else:
-                    if y > 0:
-                        row += ", "
-                    row += coord
-            rows.append(row)
-        asic_layout = "{\n" + ",\n".join(rows) + "\n}"
-        cpu_layout = f"{{\n    {{{cpu_pos[0]},{cpu_pos[1]}}}\n}}"
-        return asic_layout, cpu_layout
-
     def _topology(self):
         # Input check
         M, K, N = self._mkn
@@ -197,7 +195,10 @@ class HyperparameterUpdater:
 
         # CPU position
         # Update chiplet layout definitions in the C++ header file
-        asic_layout, cpu_layout = self._chiplet_layout()
+        asic_layout, cpu_layout = _chiplet_layout(
+            *self._mesh_xy_dim,
+            self.hp['topology']['cpu-position']['value']
+        )
         self.comms_prtc_replacements.append(['static constexpr Mesh2DCoord',
                                              'ASIC_SLOTS[]', asic_layout])
         self.comms_prtc_replacements.append(['static constexpr Mesh2DCoord',
@@ -227,6 +228,13 @@ class HyperparameterUpdater:
         self.comms_prtc_replacements.append(['static constexpr int', 'M', M])
         self.comms_prtc_replacements.append(['static constexpr int', 'K', K])
         self.comms_prtc_replacements.append(['static constexpr int', 'N', N])
+
+    def _router(self):
+        # Number of virtual channels and their depths
+        vc_count = self.hp['router']['virtual-channel-count']['value']
+        vc_depth = self.hp['router']['virtual-channel-depth']['value']
+        popnet_vc_args = ['-V', str(vc_count), '-B', str(vc_depth)]
+        self.sim_config['phase2'][0]['args'][:0] = popnet_vc_args
 
     def update(self):
         self._clock()

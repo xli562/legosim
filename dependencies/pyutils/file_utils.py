@@ -74,11 +74,10 @@ def replace_cpp_vars(file_path:Path|str,
 
 class Mesh2DGraph(Graph):
     """ Graph of a 2D mesh network """
-    def __init__(self, name = None, comment = None, filename=None, 
-                 directory=None, format = None, engine = None, 
-                 encoding = DEFAULT_ENCODING, graph_attr=None, 
-                 node_attr=None, edge_attr=None, body=None, 
-                 strict = False, *, renderer = None, formatter = None):
+    def __init__(self, name=None, comment=None, filename=None, directory=None,
+                 format=None, engine=None, encoding=DEFAULT_ENCODING,
+                 graph_attr=None, node_attr=None, edge_attr=None, body=None, 
+                 strict=False, *, renderer=None, formatter=None):
         super().__init__(name, comment, filename, directory, format, 
                          engine, encoding, graph_attr, node_attr, 
                          edge_attr, body, strict, renderer=renderer, 
