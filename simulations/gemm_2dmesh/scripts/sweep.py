@@ -4,7 +4,7 @@ import subprocess
 from itertools import product
 from copy import deepcopy
 from pathlib import Path
-from typing import Generator
+from typing import Iterator
 import yaml
 from dotenv import load_dotenv
 load_dotenv()
@@ -21,7 +21,7 @@ TEMPLATES_DIR = SIMULATION_ROOT / 'scripts/resource'
 DEFAULT_HPS_PATH = SIMULATION_ROOT / 'hyperparameters.yml'
 SWEEP_HPS_PATH = SIMULATION_ROOT / 'sweep_hyperparameters.yml'
 
-def gen_sweep_hps(sweep_params) -> Generator[dict]:
+def gen_sweep_hps(sweep_params) -> Iterator[dict]:
     """ Generator of hyperparameter sets for the sweep
     
     Note

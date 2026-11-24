@@ -1,0 +1,157 @@
+# Hyperparameters for the simulation.
+# Each hyperparameter has a value and a unit.
+# These hyperparameters are independent. If some of them should be related,
+#   a model should be built.
+
+technology-node:
+  electronic:
+    value: TG-11
+  photonic:
+    value: "0001"
+
+clock:
+  cpu:
+    value: 2000
+    unit: MHz
+  asic:
+    value: 100
+    unit: MHz
+  electrical-network:
+    value: 200
+    unit: MHz
+
+topology:
+  mesh-dimension:
+    value: [3, 3]
+    unit: count
+  flit-size:
+    value: 16
+    unit: byte
+  cpu-position:
+    value: [1, 1]
+    unit: count
+
+workload:
+  matrices-dimensions:
+    value: [150, 60, 200]
+
+asic:
+  area:
+    value: 2
+    unit: mm**2
+
+router:
+  head-latency:
+    value: 3
+    unit: cycle
+  body-latency:
+    value: 3
+    unit: cycle
+  area:
+    value: 1
+    unit: mm**2
+  virtual-channel-count:
+    value: 3
+    unit: count
+  virtual-channel-depth:
+    value: 4
+    unit: count
+
+memory-block:
+  capacity:
+    value: 1
+    unit: kB
+  # Number of ports
+  read-port-count:
+    value: 1
+    unit: count
+  write-port-count:
+    value: 1
+    unit: count
+  bidirectional-port-count:
+    value: 0
+    unit: count
+  # Latency
+  read-latency:
+    value: 5
+    unit: cycle
+  write-latency:
+    value: 7
+    unit: cycle
+  # Bandwidth
+  read-bandwidth:
+    value: 1
+    unit: TB/s
+  write-bandwidth:
+    value: 1
+    unit: TB/s
+  # Energy and power
+  static-power:
+    value: 1
+    unit: pW
+  read-energy:
+    value: 1
+    unit: pJ/bit
+  write-energy:
+    value: 2
+    unit: pJ/bit
+
+electronic-link:
+  latency:
+    value: 2
+    unit: cycle
+  capacity:
+    value: 256
+    unit:  Gb/s
+
+laser:
+  efficiency:
+    value: 0.25
+    unit: rate
+  wavelength-count:
+    value: 4
+    unit: count
+
+photonic-link:
+  latency:
+    value: 0
+    unit: cycle
+  capacity-per-wavelength:
+    value: 32
+    unit: Gb/s
+  coupler-loss:
+    value: 2
+    unit: dB
+  waveguide-loss:
+    value: 1
+    unit: dB/cm
+  bit-error-rate:
+    value: 1e-15
+    unit: rate
+
+electronic-photonic-interface:
+  ring-drop-loss:
+    value: 1
+    unit: dB
+  ring-through-loss:
+    value: 0.01
+    unit: dB
+  modulator-loss:
+    value: 3
+    unit: dB
+  modulator-extinction:
+    value: 5
+    unit: dB
+  ring-tuning-model:
+    value: full-thermal
+    supported-values:
+      - full-thermal
+      - bit-reshuffled
+      - electrically-assisted
+    unit: value-is-text
+  ring-heating-efficiency:
+    value: 100
+    unit: K/mW
+  photodetector-capacitance:
+    value: 5
+    unit: fF
