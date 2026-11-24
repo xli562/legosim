@@ -87,14 +87,14 @@ For the artifact document, please access [Artifact for LEGOSim](./artifact/READM
 9. Compile and install inter-chiplet communication program. interchiplet provides APIs and implementation code for inter-chiplet communication.
 
     ```
-    cd interchiplet
+    cd dependencies/interchiplet
     mkdir build
     cd build
     cmake ..
     make
     ```
 
-    After compilation, find record_transfer and zmq_pro in interchiplet/bin, and libinterchiplet_app.a in interchiplet/lib.
+    After compilation, find record_transfer and zmq_pro in dependencies/interchiplet/bin, and libinterchiplet_app.a in dependencies/interchiplet/lib.
 
     zmq_pro requires ZMQ environment. Usually skipped during cmake step.
 
@@ -161,8 +161,8 @@ patch.sh script generates patches:
 ./scripts/patch.sh
 ```
 
-1. Packages modifications to snipersim.diff and gpgpu-sim.diff in interchiplet/patch. diff files are git tracked.
-2. Also saves modified files in interchiplet/patch/changed_files folder maintaining directory structure, for reference if diff files have issues.
+1. Packages modifications to snipersim.diff and gpgpu-sim.diff in dependencies/interchiplet/patch. diff files are git tracked.
+2. Also saves modified files in dependencies/interchiplet/patch/changed_files folder maintaining directory structure, for reference if diff files have issues.
 
 apply_patch.sh script applies patches:
 
@@ -171,9 +171,9 @@ apply_patch.sh script applies patches:
 ```
 
 1. Applies snipersim.diff, gpgpu-sim.diff, gem5.diff, popnet.diff and scale-sim.diff to snipersim, gpgpu-sim, gem5, popnet and scale-sim under dependencies/.
-2. If application fails, refer to files in interchiplet/patch/changed_files for manual modification.
+2. If application fails, refer to files in dependencies/interchiplet/patch/changed_files for manual modification.
 
-Note: Not recommended to directly copy from interchiplet/patch/changed_files to the snipersim and gpgpu-sim folders under dependencies/. Snipersim and gpgpu-sim evolution might modify same files as chiplet simulator. Patches report conflicts, direct copying causes unpredictable errors.
+Note: Not recommended to directly copy from dependencies/interchiplet/patch/changed_files to the snipersim and gpgpu-sim folders under dependencies/. Snipersim and gpgpu-sim evolution might modify same files as chiplet simulator. Patches report conflicts, direct copying causes unpredictable errors.
 
 # Adding Test Programs
 
@@ -236,7 +236,7 @@ Relative paths in YAML use current path as base. Recommended to use environment 
 Main simulator program is InterChiplet. Execute in run path:
 
 ```
-$SIMULATOR_ROOT/interchiplet/bin/interchiplet $BENCHMARK_ROOT/bench.yml
+$SIMULATOR_ROOT/dependencies/interchiplet/bin/interchiplet $BENCHMARK_ROOT/bench.yml
 ```
 
 InterChiplet command format:

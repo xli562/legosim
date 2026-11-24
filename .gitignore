@@ -10,9 +10,9 @@
 benchmark/**/bin
 benchmark/**/obj
 benchmark/**/cfg
-interchiplet/bin
-interchiplet/lib
-interchiplet/build
+dependencies/interchiplet/bin
+dependencies/interchiplet/lib
+dependencies/interchiplet/build
 benchmark/matmul_test/proc_r*
 benchmark/matmul_test/bench.txt
 benchmark/matmul_test/delayInfo.txt
