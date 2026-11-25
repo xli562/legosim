@@ -5,7 +5,10 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
 
+#include <atomic>
+#include <cerrno>
 #include <ctime>
 #include <vector>
 
@@ -52,6 +55,8 @@ class ProcessStruct {
     pthread_t m_thread_id;
     int m_pid;
     int m_pid2;
+    bool m_succeeded = false;
+    std::atomic<bool>* m_phase_failed = nullptr;
 
     /**
      * @brief Pointer to synchronize structure.
@@ -189,6 +194,10 @@ void* bridge_thread(void* __args_ptr) {
     }
 
     if (pid == 0) {  // Child process
+        if (setpgid(0, 0) == -1) {
+            perror("setpgid");
+            _exit(127);
+        }
         // Close unnecessary pipe ends
         close(pipe_stdin[1]);
         close(pipe_stdout[0]);
@@ -237,8 +246,13 @@ void* bridge_thread(void* __args_ptr) {
 
         // If execl fails, it means the child process couldn't be started
         perror("execvp");
-        exit(EXIT_FAILURE);
+        _exit(127);
     } else {  // Parent process
+        // Both sides establish the group to avoid racing the child's exec.
+        if (setpgid(pid, pid) == -1 && errno != EACCES && errno != ESRCH) {
+            perror("setpgid");
+            proc_struct->m_phase_failed->store(true);
+        }
         spdlog::info("Start simulation process {}. Command: {}", pid, proc_struct->m_command);
         proc_struct->m_pid2 = pid;
 
@@ -265,72 +279,121 @@ void* bridge_thread(void* __args_ptr) {
 
         char* pipe_buf = new char[PIPE_BUF_SIZE + 1];
         bool to_stdout = proc_struct->m_to_stdout;
-        int res = 0;
+        bool io_ok = true;
+        int status = 0;
+        pid_t waited = 0;
         while (true) {
-            int res = poll(fd_list, 2, 1000);
-            if (res == -1) {
+            if (proc_struct->m_phase_failed->load()) {
+                spdlog::warn("Stopping simulator {} (pid {}) after phase failure.",
+                             proc_struct->m_command, pid);
+                kill(-pid, SIGKILL);
+                if (waited == 0) kill(pid, SIGKILL);
+                io_ok = false;
+                break;
+            }
+            int ready = poll(fd_list, 2, 1000);
+            if (ready == -1) {
+                if (errno == EINTR) continue;
                 perror("poll");
+                io_ok = false;
                 break;
             }
 
-            bool has_stdout = false;
-            if (fd_list[0].revents & POLL_IN) {
-                has_stdout = true;
-                int res = read(stdout_fd, pipe_buf, PIPE_BUF_SIZE);
-                if (res <= 0) break;
-                pipe_buf[res] = '\0';
-                // log redirection.
-                log_file.write(pipe_buf, res).flush();
-                if (to_stdout) {
-                    std::cout.write(pipe_buf, res);
-                    std::cout.flush();
+            bool has_output = false;
+            for (int stream = 0; stream < 2; ++stream) {
+                if (fd_list[stream].revents & (POLLERR | POLLNVAL)) {
+                    spdlog::error("Output pipe failed for process {}.", pid);
+                    io_ok = false;
+                    break;
                 }
-                // Parse command in pipe_buf
-                // std::cout<<"----------------------------"<<pipe_buf<<"----------------------------"<<std::endl;
+                if (!(fd_list[stream].revents & (POLLIN | POLLHUP))) continue;
+                ssize_t count = read(fd_list[stream].fd, pipe_buf, PIPE_BUF_SIZE);
+                if (count < 0) {
+                    if (errno == EINTR) continue;
+                    perror("read");
+                    io_ok = false;
+                    break;
+                }
+                if (count == 0) {
+                    // Disable EOF streams while continuing to monitor the child.
+                    fd_list[stream].fd = -1;
+                    continue;
+                }
+                has_output = true;
+                pipe_buf[count] = '\0';
+                log_file.write(pipe_buf, count).flush();
+                if (to_stdout) {
+                    std::ostream& output = stream == 0 ? std::cout : std::cerr;
+                    output.write(pipe_buf, count).flush();
+                }
                 parse_command(pipe_buf, proc_struct, stdin_fd);
             }
-            if (fd_list[1].revents & POLL_IN) {
-                has_stdout = true;
-                int res = read(stderr_fd, pipe_buf, PIPE_BUF_SIZE);
-                if (res <= 0) break;
-                pipe_buf[res] = '\0';
-                // log redirection.
-                log_file.write(pipe_buf, res).flush();
-                if (to_stdout) {
-                    std::cerr.write(pipe_buf, res);
-                    std::cerr.flush();
-                }
-                // std::cout<<"----------------------------"<<pipe_buf<<"----------------------------"<<std::endl;
-                // Parse command in pipe_buf
-                parse_command(pipe_buf, proc_struct, stdin_fd);
-            }
+            if (!io_ok) break;
 
-            // Check the status of child process and quit.
-            int status;
-            if (!has_stdout && (waitpid(pid, &status, WNOHANG) > 0)) {
-                // Optionally handle child process termination status
-                if (status == 0) {
-                    spdlog::info("Simulation process {} terminate with status = {}.",
-                                 proc_struct->m_pid2, status);
-                } else {
-                    spdlog::error("Simulation process {} terminate with status = {}.",
-                                  proc_struct->m_pid2, status);
+            // Drain available output before reaping, including final log messages.
+            if (waited == 0) {
+                waited = waitpid(pid, &status, WNOHANG);
+                if (waited == -1 && errno == EINTR) {
+                    waited = 0;
+                    continue;
                 }
-                break;
+                if (waited == -1 || (waited > 0 &&
+                    (!WIFEXITED(status) || WEXITSTATUS(status) != 0))) {
+                    proc_struct->m_phase_failed->store(true);
+                    kill(-pid, SIGKILL);
+                    break;
+                }
             }
+            if (waited != 0 && !has_output) break;
         }
 
-        delete pipe_buf;
+        if (!io_ok) {
+            proc_struct->m_phase_failed->store(true);
+            kill(-pid, SIGKILL);
+            if (waited == 0) kill(pid, SIGKILL);
+        }
+        close(stdin_fd);
+        close(stdout_fd);
+        close(stderr_fd);
+        if (waited == 0) {
+            do {
+                waited = waitpid(pid, &status, 0);
+            } while (waited == -1 && errno == EINTR);
+        }
+        if (waited == -1) {
+            spdlog::error("waitpid failed for {} (pid {}): errno {}",
+                          proc_struct->m_command, pid, errno);
+        } else if (WIFSIGNALED(status)) {
+            spdlog::error("{} (pid {}) terminated by signal {}.",
+                          proc_struct->m_command, pid, WTERMSIG(status));
+        } else if (WIFEXITED(status)) {
+            int exit_code = WEXITSTATUS(status);
+            proc_struct->m_succeeded = io_ok && exit_code == 0;
+            if (exit_code == 0) {
+                spdlog::info("Simulation process {} exited with status 0.", pid);
+            } else {
+                spdlog::error("{} (pid {}) exited with status {}.",
+                              proc_struct->m_command, pid, exit_code);
+            }
+        }
+        delete[] pipe_buf;
     }
+    delete[] sub_dir_path;
 
     return 0;
 }
 
-InterChiplet::InnerTimeType __loop_phase_one(
+struct PhaseOneResult {
+    InterChiplet::InnerTimeType cycles;
+    bool succeeded;
+};
+
+PhaseOneResult __loop_phase_one(
     int __round, const std::vector<ProcessConfig>& __proc_phase1_cfg_list,
     const std::vector<ProcessConfig>& __proc_phase2_cfg_list, int __width) {
     // Create synchronize data structure.
     SyncStruct* g_sync_structure = new SyncStruct();
+    std::atomic<bool> phase_failed(false);
 
     // Load delay record.
     g_sync_structure->m_delay_list.loadDelayInfo("delayInfo.txt",
@@ -346,10 +409,11 @@ InterChiplet::InnerTimeType __loop_phase_one(
         proc_struct->m_phase = 1;
         proc_struct->m_thread = thread_i;
         proc_struct->m_sync_struct = g_sync_structure;
+        proc_struct->m_phase_failed = &phase_failed;
         int res =
             pthread_create(&(proc_struct->m_thread_id), NULL, bridge_thread, (void*)proc_struct);
-        if (res < 0) {
-            perror("pthread_create");
+        if (res != 0) {
+            spdlog::error("pthread_create failed: error {}", res);
             exit(EXIT_FAILURE);
         }
 
@@ -357,9 +421,15 @@ InterChiplet::InnerTimeType __loop_phase_one(
         thread_i++;
     }
 
-    // Wait threads to finish.
+    // Read worker results only after joining, so no synchronization is needed here.
+    bool succeeded = true;
     for (auto& proc_struct : proc_struct_list) {
-        pthread_join(proc_struct->m_thread_id, NULL);
+        int join_error = pthread_join(proc_struct->m_thread_id, NULL);
+        if (join_error != 0) {
+            spdlog::error("pthread_join failed: error {}", join_error);
+            exit(EXIT_FAILURE);
+        }
+        succeeded = succeeded && proc_struct->m_succeeded;
         delete proc_struct;
     }
     spdlog::info("All processes have exited.");
@@ -376,12 +446,13 @@ InterChiplet::InnerTimeType __loop_phase_one(
     // Destory global synchronize structure, and return total cycle.
     InterChiplet::InnerTimeType res_cycle = g_sync_structure->m_cycle_struct.cycle();
     delete g_sync_structure;
-    return res_cycle;
+    return {res_cycle, succeeded};
 }
 
-void __loop_phase_two(int __round, const std::vector<ProcessConfig>& __proc_cfg_list) {
+bool __loop_phase_two(int __round, const std::vector<ProcessConfig>& __proc_cfg_list) {
     // Create synchronize data structure.
     SyncStruct* g_sync_structure = new SyncStruct();
+    std::atomic<bool> phase_failed(false);
 
     // Create multi-thread.
     int thread_i = 0;
@@ -393,10 +464,11 @@ void __loop_phase_two(int __round, const std::vector<ProcessConfig>& __proc_cfg_
         proc_struct->m_thread = thread_i;
         thread_i++;
         proc_struct->m_sync_struct = g_sync_structure;
+        proc_struct->m_phase_failed = &phase_failed;
         int res =
             pthread_create(&(proc_struct->m_thread_id), NULL, bridge_thread, (void*)proc_struct);
-        if (res < 0) {
-            perror("pthread_create");
+        if (res != 0) {
+            spdlog::error("pthread_create failed: error {}", res);
             exit(EXIT_FAILURE);
         }
 
@@ -404,18 +476,27 @@ void __loop_phase_two(int __round, const std::vector<ProcessConfig>& __proc_cfg_
         thread_i++;
     }
 
-    // Wait threads to finish.
+    // Read worker results only after joining, so no synchronization is needed here.
+    bool succeeded = true;
     for (auto& proc_struct : proc_struct_list) {
-        pthread_join(proc_struct->m_thread_id, NULL);
+        int join_error = pthread_join(proc_struct->m_thread_id, NULL);
+        if (join_error != 0) {
+            spdlog::error("pthread_join failed: error {}", join_error);
+            exit(EXIT_FAILURE);
+        }
+        succeeded = succeeded && proc_struct->m_succeeded;
         delete proc_struct;
     }
     spdlog::info("All processes have exited.");
 
     // Destory global synchronize structure.
     delete g_sync_structure;
+    return succeeded;
 }
 
 int main(int argc, const char* argv[]) {
+    // A cancelled simulator can close its command pipe before a reply is sent.
+    signal(SIGPIPE, SIG_IGN);
     // Parse command line.
     CmdLineOptions options;
     if (options.parse(argc, argv) != 0) {
@@ -458,9 +539,14 @@ int main(int argc, const char* argv[]) {
         // Get start time of one round.
         gettimeofday(&roundstart, 0);
         spdlog::info("**** Round {} Phase 1 ****", round);
-        InterChiplet::InnerTimeType round_cycle =
+        PhaseOneResult phase_one =
             __loop_phase_one(round, configs.m_phase1_proc_cfg_list, configs.m_phase2_proc_cfg_list,
                              width);
+        if (!phase_one.succeeded) {
+            spdlog::error("Round {} phase 1 failed.", round);
+            return EXIT_FAILURE;
+        }
+        InterChiplet::InnerTimeType round_cycle = phase_one.cycles;
 
         // Get simulation cycle.
         // If simulation cycle this round is close to the previous one, quit iteration.
@@ -481,7 +567,10 @@ int main(int argc, const char* argv[]) {
         sim_cycle = round_cycle;
 
         spdlog::info("**** Round {} Phase 2 ***", round);
-        __loop_phase_two(round, configs.m_phase2_proc_cfg_list);
+        if (!__loop_phase_two(round, configs.m_phase2_proc_cfg_list)) {
+            spdlog::error("Round {} phase 2 failed.", round);
+            return EXIT_FAILURE;
+        }
 
         // Get end time of one round.
         gettimeofday(&roundend, 0);
